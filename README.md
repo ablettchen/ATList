@@ -12,16 +12,13 @@
 
     //加载数据
     __weak __typeof(&*self)weakSelf = self;
-    [self.tableView loadData:^(ATList * _Nonnull list) {
-        
-        //1. 列表刷新配置
-        list.loadType = ATLoadTypeAll;
-        
-        list.blankDic = @{@(ATBlankTypeFailure) : blankMake(blankImage(ATBlankTypeFailure), @"加载失败了", @"404")};
-        [list start];
-        
-        //2. 请求数据
-        //请求参数
+    [self.tableView loadConfig:^ATConfig * _Nullable(ATConfig * _Nonnull config) {
+        config.loadType = ATLoadTypeAll;
+        config.loadStrategy = ATLoadStrategyAuto;
+        config.blankDic = @{@(ATBlankTypeFailure) : blankMake(blankImage(ATBlankTypeFailure), @"加载失败了", @"404")};
+        config.length = 15;
+        return config;
+    } start:^(ATList * _Nonnull list) {
         NSDictionary *parameters = @{@"offset"  : @(list.range.location),
                                      @"number"  : @(list.range.length)};
         __strong __typeof(&*self)strongSelf = weakSelf;
@@ -33,8 +30,15 @@
             //4. 刷新
             [list finish:error];
         }];
+
     }];
-       
+
+    /** 若 config.loadStrategy = ATLoadStrategyManual，则需要手动调用 [self.tableView.at_list loadNew];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self.tableView.at_list loadNew];
+    });
+     */
+           
 ```
 
 ## Requirements
