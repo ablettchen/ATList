@@ -12,6 +12,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#define AT_SAFE_BLOCK(BlockName, ...) ({ !BlockName ? nil : BlockName(__VA_ARGS__); })
+#define AT_SAFE_PERFORM_SELECTOR(Obj, Sel, Arg) ({ \
+    BOOL perform = NO; \
+    if (Obj && Sel) { \
+        if ([Obj respondsToSelector:Sel]) { \
+            [Obj performSelectorOnMainThread:Sel withObject:Arg waitUntilDone:YES]; \
+            perform = YES; \
+            } \
+    } \
+    (perform); \
+})
+
 typedef NS_OPTIONS(NSUInteger, ATLoadType) {
     ATLoadTypeNone = 0,                             ///< 无
     ATLoadTypeNew = 1 << 0,                         ///< 下拉刷新
@@ -58,6 +70,18 @@ typedef NS_ENUM(NSUInteger, ATLoadStatus) {
 
 /** 进入刷新状态 */
 - (void)beginning;
+
+@end
+
+@interface ATCenter : NSObject
+
+@property (strong, nonatomic, nullable) ATConfig *config;
+
++ (instancetype)center;
++ (instancetype)defaultCenter;
+
+- (void)setupConfig:(void(^)(ATConfig * _Nonnull config))block;
++ (void)setupConfig:(void(^)(ATConfig * _Nonnull config))block;
 
 @end
 

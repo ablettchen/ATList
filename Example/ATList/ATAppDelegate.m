@@ -8,12 +8,31 @@
 //
 
 #import "ATAppDelegate.h"
+#import "UIScrollView+ATList.h"
 
 @implementation ATAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    
+    [ATCenter setupConfig:^(ATConfig * _Nonnull config) {
+        config.loadType = ATLoadTypeAll;
+        config.loadStrategy = ATLoadStrategyAuto;
+        
+        ATBlank *failureBlank = blankMake(blankImage(ATBlankTypeFailure), @"数据请求失败☹️", @"200014");
+        ATBlank *noDataBlank = blankMake(blankImage(ATBlankTypeNoData), @"暂时没有数据🙂", @"点击刷新");
+        noDataBlank.tapEnable = YES;
+        ATBlank *noNetworkBlank = blankMake(blankImage(ATBlankTypeNoNetwork), @"貌似没有网络🙄", @"请检查设置");
+
+        config.blankDic = @{@(ATBlankTypeFailure)   : failureBlank,
+                            @(ATBlankTypeNoData)    : noDataBlank,
+                            @(ATBlankTypeNoNetwork) : noNetworkBlank,
+                            };
+        
+        config.length = 18;
+    }];
+    
     return YES;
 }
 

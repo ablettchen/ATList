@@ -28,12 +28,13 @@
     
     //加载数据
     __weak __typeof(&*self)weakSelf = self;
-    [self.tableView loadConfig:^ATConfig * _Nullable(ATConfig * _Nonnull config) {
-        config.loadType = ATLoadTypeAll;
-        config.loadStrategy = ATLoadStrategyAuto;
-        config.blankDic = @{@(ATBlankTypeFailure) : blankMake(blankImage(ATBlankTypeFailure), @"加载失败了", @"404")};
-        config.length = 15;
-        return config;
+    [self.tableView loadConfig:^(ATConfig * _Nonnull config) {
+        
+        //config.loadType = ATLoadTypeNew;
+        //config.loadStrategy = ATLoadStrategyAuto;
+        //config.blankDic = @{@(ATBlankTypeFailure) : blankMake(blankImage(ATBlankTypeFailure), @"绘本数据加载失败", @"40015")};
+        //config.length = 15;
+        
     } start:^(ATList * _Nonnull list) {
         NSDictionary *parameters = @{@"offset"  : @(list.range.location),
                                      @"number"  : @(list.range.length)};
@@ -94,8 +95,8 @@
                 NSInteger value = range.location*range.length+i+1;
                 [models addObject:@(value)];
             }
-            //if (finished) finished(nil, models);
-            if (finished) finished(errorMake(nil, 500, @"unknow"), nil);
+            if (finished) finished(nil, models);
+            //if (finished) finished(errorMake(nil, 500, @"unknow"), nil);
             return;
         }else {
             for (int i=0; i<2; i++) {

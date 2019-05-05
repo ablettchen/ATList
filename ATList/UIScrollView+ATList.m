@@ -11,9 +11,12 @@
 #import "UIScrollView+ATBlank.h"
 #import <objc/runtime.h>
 
+static int const dataLengthDefault = 20;
+static int const dataLengthMax     = 10000;
+
 @interface UIScrollView ()
 @property (strong, readwrite, nonatomic) ATList *at_list;
-@property (copy, nonatomic) ATConfig * (^configBlock) (ATConfig *config);
+@property (copy, nonatomic) void (^configBlock) (ATConfig *config);
 @property (copy, nonatomic) void (^startBlock) (ATList *list);
 @end
 
@@ -64,43 +67,41 @@
     }
 }
 
-- (void)loadConfig:(nullable ATConfig *(^)(ATConfig * _Nonnull config))block start:(void(^)(ATList * _Nonnull list))start {
+- (void)loadConfig:(nullable void(^)(ATConfig * _Nonnull config))block start:(void(^)(ATList * _Nonnull list))start {
     self.configBlock = block;
     self.startBlock = start;
     
     SEL setListViewSEL = NSSelectorFromString(@"setListView:");
-    if ([self.at_list respondsToSelector:setListViewSEL]) {;
-        [self.at_list performSelectorOnMainThread:setListViewSEL withObject:self waitUntilDone:YES];
+    AT_SAFE_PERFORM_SELECTOR(self.at_list, setListViewSEL, self);
+    
+    ATConfig *conf = [ATCenter defaultCenter].config?:self.at_list.config;
+    AT_SAFE_BLOCK(block, conf);
+    
+    if (conf.length == 0) {
+        if (conf.loadType == ATLoadTypeNone || \
+            conf.loadType == ATLoadTypeNew) {
+            conf.length = dataLengthMax;
+        }else {
+            conf.length = dataLengthDefault;
+        }
     }
     
-    ATConfig *conf = nil;
-    if (block) {
-        conf = block(self.at_list.config);
-    }else {
-        conf = self.at_list.config;
-    }
     [self.at_list setConfig:conf];
-
+    
     if (conf.loadStrategy == ATLoadStrategyAuto) {
         if (self.at_list.config.loadType == ATLoadTypeNone) {
             
             ATLoadStatus loadStatus = ATLoadStatusNew;
             NSValue *loadStatusValue = [NSValue valueWithBytes:&loadStatus objCType:@encode(ATLoadStatus)];
             SEL statusSEL = NSSelectorFromString(@"setLoadStatusValue:");
-            if ([self.at_list respondsToSelector:statusSEL]) {
-                [self.at_list performSelectorOnMainThread:statusSEL withObject:loadStatusValue waitUntilDone:YES];
-            }
+            AT_SAFE_PERFORM_SELECTOR(self.at_list, statusSEL, loadStatusValue);
             
             NSRange range = NSMakeRange(0, self.at_list.config.length);
             NSValue *rangeValue = [NSValue valueWithBytes:&range objCType:@encode(NSRange)];
             SEL rangeSEL = NSSelectorFromString(@"setRangeValue:");
-            if ([self.at_list respondsToSelector:rangeSEL]) {
-                [self.at_list performSelectorOnMainThread:rangeSEL withObject:rangeValue waitUntilDone:YES];
-            }
-            
-            if (start) {
-                start(self.at_list);
-            }
+            AT_SAFE_PERFORM_SELECTOR(self.at_list, rangeSEL, rangeValue);
+
+            AT_SAFE_BLOCK(start, self.at_list);
             
         }else {
             [self.at_list beginning];

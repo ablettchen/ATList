@@ -12,9 +12,6 @@
 #import "ATRefreshFooter.h"
 #import "UIScrollView+ATBlank.h"
 
-static int const dataLength = 20;
-
-
 @interface ATConfig ()
 @end
 @implementation ATConfig
@@ -25,7 +22,7 @@ static int const dataLength = 20;
     
     self.loadType = ATLoadTypeNew;
     self.loadStrategy = ATLoadStrategyAuto;
-    self.length = dataLength;
+    self.length = 0;
     
     return self;
 }
@@ -117,16 +114,12 @@ static int const dataLength = 20;
     self.range = NSMakeRange(loc, self.config.length);
     
     SEL loadMoreSEL = NSSelectorFromString(@"loadMore");
-    if (self.listView && [self.listView respondsToSelector:loadMoreSEL]) {
-        [self.listView performSelector:loadMoreSEL withObject:nil afterDelay:0.0f];
-    }
+    AT_SAFE_PERFORM_SELECTOR(self.listView, loadMoreSEL, nil);
 }
 
 - (void)reloadData {
     SEL reloadSEL = NSSelectorFromString(@"reloadData");
-    if ([self.listView respondsToSelector:reloadSEL]) {
-        [self.listView performSelector:reloadSEL withObject:nil afterDelay:0.0f];
-    }else {
+    if (!AT_SAFE_PERFORM_SELECTOR(self.listView, reloadSEL, nil)) {
         [self.listView setNeedsDisplay];
     }
 }
@@ -230,13 +223,47 @@ static int const dataLength = 20;
     self.lastItemCount = 0;
     
     SEL loadNewSEL = NSSelectorFromString(@"loadNew");
-    if (self.listView && [self.listView respondsToSelector:loadNewSEL]) {
-        [self.listView performSelector:loadNewSEL withObject:nil afterDelay:0.0f];
-    }
+    AT_SAFE_PERFORM_SELECTOR(self.listView, loadNewSEL, nil);
 }
 
 - (void)beginning {
     [self.header beginRefreshing];
+}
+
+@end
+
+
+@implementation ATCenter
+
++ (instancetype)center {
+    return [[[self class] alloc] init];
+}
+
++ (instancetype)defaultCenter {
+    static id sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [self center];
+    });
+    return sharedInstance;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (!self) {
+        return nil;
+    }
+    return self;
+}
+
+- (void)setupConfig:(void(^)(ATConfig * _Nonnull config))block {
+    ATConfig *config = [ATConfig new];
+    AT_SAFE_BLOCK(block, config);
+    self.config = config;
+}
+
++ (void)setupConfig:(void(^)(ATConfig * _Nonnull config))block {
+    [[ATCenter defaultCenter] setupConfig:block];
 }
 
 @end

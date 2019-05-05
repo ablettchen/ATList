@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong, readonly, nonatomic, nonnull) ATList *at_list;
 
-- (void)loadConfig:(nullable ATConfig *(^)(ATConfig * _Nonnull config))block start:(void(^)(ATList * _Nonnull list))start;
+- (void)loadConfig:(nullable void(^)(ATConfig * _Nonnull config))block start:(void(^)(ATList * _Nonnull list))start;
 
 @end
 

@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ATList'
-  s.version          = '0.1.1'
+  s.version          = '0.1.2'
   s.summary          = '快速配置下拉刷新、上拉加载、空白页，适用于 UITableView、UICollectionView、UIScrollView'
   s.homepage         = 'https://github.com/ablettchen/ATList'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
   #s.resource         = 'ATList/ATList.bundle'
   s.requires_arc     = true
   
-  s.dependency 'MJRefresh', '~> 3.1.15.7'
+  s.dependency 'MJRefresh'
   s.dependency 'ATBlank'
   
 end
