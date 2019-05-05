@@ -39,7 +39,7 @@
         NSDictionary *parameters = @{@"offset"  : @(list.range.location),
                                      @"number"  : @(list.range.length)};
         __strong __typeof(&*self)strongSelf = weakSelf;
-        [weakSelf requestDataWithParameters:parameters finished:^(NSError *error, NSArray *datas) {
+        [weakSelf requestData:parameters finished:^(NSError *error, NSArray *datas) {
             //3. 添加数据
             //当前加载状态为下拉刷新时移除旧数据
             if (list.loadStatus == ATLoadStatusNew) [strongSelf.datas removeAllObjects];
@@ -82,8 +82,8 @@
 #pragma mark - privite
 
 /** 模拟请求数据 */
-- (void)requestDataWithParameters:(NSDictionary *)parameters
-                         finished:(void(^)(NSError *error, NSArray *datas))finished {
+- (void)requestData:(NSDictionary *)parameters
+           finished:(void(^)(NSError *error, NSArray *datas))finished {
     NSLog(@"\nparameters:%@", parameters);
     NSMutableArray *models = [NSMutableArray array];
     NSRange range = NSMakeRange([parameters[@"offset"] intValue], [parameters[@"number"] intValue]);

@@ -36,8 +36,9 @@
     
     return YES;
 }
+@end
 ```
-1. 具体页面中使用
+2. 具体页面中使用
 
 ```objectiveC
 #import "UIScrollView+ATList.h"
@@ -57,7 +58,7 @@ __weak __typeof(&*self)weakSelf = self;
     NSDictionary *parameters = @{@"offset"  : @(list.range.location),
                                  @"number"  : @(list.range.length)};
     __strong __typeof(&*self)strongSelf = weakSelf;
-    [weakSelf requestDataWithParameters:parameters finished:^(NSError *error, NSArray *datas) {
+    [weakSelf requestData:parameters finished:^(NSError *error, NSArray *datas) {
     
         // 3. 添加数据（当前加载状态为下拉刷新时移除旧数据）；
         if (list.loadStatus == ATLoadStatusNew) [strongSelf.datas removeAllObjects];
