@@ -45,6 +45,9 @@
 @property (strong, nonatomic) ATBlank *blank;                               ///< 空白页
 @property (assign, nonatomic) NSInteger lastItemCount;                      ///< 记录上次条数
 
+@property (strong, nonatomic) UIColor *cachedListColor;                     ///< 记录listView的背景色(为了解决自适应的问题，待优化)
+@property (strong, nonatomic) UIColor *cachedListSuperColor;                ///< 记录listView.superView的背景色(为了解决自适应的问题，待优化)
+
 @end
 @implementation ATList
 
@@ -104,6 +107,16 @@
     self.range = range;
 }
 
+- (void)setListView:(__kindof UIScrollView *)listView {
+    _listView = listView;
+    if (!self.cachedListColor) {
+        self.cachedListColor = listView.backgroundColor;
+    }
+    if (!self.cachedListSuperColor) {
+        self.cachedListSuperColor = listView.superview.backgroundColor;
+    }
+}
+
 #pragma mark - privite
 
 - (void)loadMore {
@@ -118,6 +131,17 @@
 }
 
 - (void)reloadData {
+    
+    if (self.listView.at_itemsCount == 0) {
+        self.listView.backgroundColor = [UIColor clearColor];
+        self.listView.superview.backgroundColor = [UIColor whiteColor];
+    }else {
+        if (self.cachedListColor) {
+            self.listView.backgroundColor = self.cachedListColor;
+            self.listView.superview.backgroundColor = self.cachedListSuperColor;
+        }
+    }
+    
     SEL reloadSEL = NSSelectorFromString(@"reloadData");
     if (!AT_SAFE_PERFORM_SELECTOR(self.listView, reloadSEL, nil)) {
         [self.listView setNeedsDisplay];
