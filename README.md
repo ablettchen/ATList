@@ -22,8 +22,8 @@
         config.loadStrategy = ATLoadStrategyAuto;
         
         ATBlank *failureBlank = blankMake(blankImage(ATBlankTypeFailure), @"数据请求失败☹️", @"200014");
-        ATBlank *noDataBlank = blankMake(blankImage(ATBlankTypeNoData), @"暂时没有数据🙂", @"点击刷新");
-        noDataBlank.tapEnable = YES;
+        ATBlank *noDataBlank = blankMake(blankImage(ATBlankTypeNoData), @"暂时没有数据🙂", @"哈哈哈~");
+        noDataBlank.tapEnable = NO;
         ATBlank *noNetworkBlank = blankMake(blankImage(ATBlankTypeNoNetwork), @"貌似没有网络🙄", @"请检查设置");
 
         config.blankDic = @{@(ATBlankTypeFailure)   : failureBlank,
