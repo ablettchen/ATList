@@ -160,6 +160,10 @@
         }
     }
     
+    if (blankType == ATBlankTypeNoData) {
+        self.blank.tapEnable = NO;
+    }
+    
     __weak __typeof(&*self)weakSelf = self;
     self.blank.tapBlock = ^{
         if (!weakSelf.blank.imageAnimating) {

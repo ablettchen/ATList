@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ATList'
-  s.version          = '0.1.4'
+  s.version          = '0.1.5'
   s.summary          = '快速配置下拉刷新、上拉加载、空白页，适用于 UITableView、UICollectionView、UIScrollView'
   s.homepage         = 'https://github.com/ablettchen/ATList'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
