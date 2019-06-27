@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ATList'
-  s.version          = '0.1.6'
-  s.summary          = '快速配置下拉刷新、上拉加载、空白页，适用于 UITableView、UICollectionView、UIScrollView'
+  s.version          = '0.2.0'
+  s.summary          = 'Quick configuration pull-down refresh, pull-up loading, blank page, for UITableView, UICollectionView, UIScrollView.'
   s.homepage         = 'https://github.com/ablettchen/ATList'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'ablettchen' => 'ablettchen@gmail.com' }
@@ -17,10 +17,10 @@ Pod::Spec.new do |s|
   s.platform         = :ios, '8.0'
   s.source           = { :git => 'https://github.com/ablettchen/ATList.git', :tag => s.version.to_s }
   s.source_files     = 'ATList/**/*.{h,m}'
-  #s.resource         = 'ATList/ATList.bundle'
   s.requires_arc     = true
   
   s.dependency 'MJRefresh'
   s.dependency 'ATBlank'
+  s.dependency 'ATCategories'
   
 end

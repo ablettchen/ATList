@@ -12,26 +12,34 @@
 #import "ATRefreshFooter.h"
 #import "UIScrollView+ATBlank.h"
 
-@interface ATConfig ()
+#if __has_include(<ATCategories/ATCategories.h>)
+#import <ATCategories/ATCategories.h>
+#else
+#import "ATCategories.h"
+#endif
+
+@interface ATListConf ()
 @end
-@implementation ATConfig
+@implementation ATListConf
 
 - (instancetype)init {
     self = [super init];
     if (!self) return nil;
-    
+    [self reset];
+    return self;
+}
+
+- (void)reset {
     self.loadType = ATLoadTypeNew;
     self.loadStrategy = ATLoadStrategyAuto;
     self.length = 0;
-    
-    return self;
+    self.blankDic = nil;
 }
 
 @end
 
 @interface ATList ()
 
-@property (strong, readwrite, nonatomic, nonnull) ATConfig *config;
 @property (assign, readwrite, nonatomic) enum ATLoadStatus loadStatus;      ///< 加载状态
 @property (assign, readwrite, nonatomic) NSRange range;                     ///< 数据范围
 
@@ -45,9 +53,6 @@
 @property (strong, nonatomic) ATBlank *blank;                               ///< 空白页
 @property (assign, nonatomic) NSInteger lastItemCount;                      ///< 记录上次条数
 
-@property (strong, nonatomic) UIColor *cachedListColor;                     ///< 记录listView的背景色(为了解决自适应的问题，待优化)
-@property (strong, nonatomic) UIColor *cachedListSuperColor;                ///< 记录listView.superView的背景色(为了解决自适应的问题，待优化)
-
 @end
 @implementation ATList
 
@@ -55,9 +60,9 @@
     self = [super init];
     if (!self) return nil;
     
-    self.config = [ATConfig new];
+    self.conf = [ATListConf new];
     self.loadStatus = ATLoadStatusIdle;
-    self.range = NSMakeRange(0, self.config.length);
+    self.range = NSMakeRange(0, self.conf.length);
     self.lastItemCount = 0;
     
     return self;
@@ -67,7 +72,7 @@
 
 - (ATRefreshHeader *)header {
     if (!_header) {
-        _header = [ATRefreshHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNew)];
+        _header = [ATRefreshHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
         [_header setTitle:@"下拉刷新" forState:MJRefreshStateIdle];
         [_header setTitle:@"释放更新" forState:MJRefreshStatePulling];
         [_header setTitle:@"加载中..." forState:MJRefreshStateRefreshing];
@@ -83,7 +88,7 @@
 
 - (ATRefreshFooter *)footer {
     if (!_footer) {
-        _footer = [ATRefreshFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadMore)];
+        _footer = [ATRefreshFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData)];
         [_footer setTitle:@"上拉加载更多" forState:MJRefreshStateIdle];
         [_footer setTitle:@"加载中..." forState:MJRefreshStateRefreshing];
         [_footer setTitle:@"没有更多数据" forState:MJRefreshStateNoMoreData];
@@ -107,41 +112,41 @@
     self.range = range;
 }
 
-- (void)setListView:(__kindof UIScrollView *)listView {
-    _listView = listView;
-    if (!self.cachedListColor) {
-        self.cachedListColor = listView.backgroundColor;
+- (void)setConf:(ATListConf *)conf {
+    if (conf == nil) {
+        conf = [ATListConf new];
     }
-    if (!self.cachedListSuperColor) {
-        self.cachedListSuperColor = listView.superview.backgroundColor;
+    _conf = conf;
+    switch (self.conf.loadType) {
+        case ATLoadTypeNone:{
+            self.listView.mj_header = nil;
+            break;
+        }
+        case ATLoadTypeNew:
+        case ATLoadTypeMore:
+        case ATLoadTypeAll:{
+            if (conf.loadStrategy == ATLoadStrategyAuto) {
+                self.listView.mj_header = self.header;
+            }
+            break;
+        }
     }
 }
 
 #pragma mark - privite
 
-- (void)loadMore {
+- (void)loadMoreData {
     if (self.loadStatus == ATLoadStatusNew) {return;}
 
     self.loadStatus = ATLoadStatusMore;
-    int loc = ceil((float)self.listView.at_itemsCount/self.config.length)?:1;
-    self.range = NSMakeRange(loc, self.config.length);
+    int loc = ceil((float)self.listView.itemsCount/self.conf.length)?:1;
+    self.range = NSMakeRange(loc, self.conf.length);
     
-    SEL loadMoreSEL = NSSelectorFromString(@"loadMore");
+    SEL loadMoreSEL = NSSelectorFromString(@"loadMoreData");
     AT_SAFE_PERFORM_SELECTOR(self.listView, loadMoreSEL, nil);
 }
 
 - (void)reloadData {
-    
-    if (self.listView.at_itemsCount == 0) {
-        self.listView.backgroundColor = [UIColor clearColor];
-        self.listView.superview.backgroundColor = [UIColor whiteColor];
-    }else {
-        if (self.cachedListColor) {
-            self.listView.backgroundColor = self.cachedListColor;
-            self.listView.superview.backgroundColor = self.cachedListSuperColor;
-        }
-    }
-    
     SEL reloadSEL = NSSelectorFromString(@"reloadData");
     if (!AT_SAFE_PERFORM_SELECTOR(self.listView, reloadSEL, nil)) {
         [self.listView setNeedsDisplay];
@@ -150,11 +155,11 @@
 
 - (void)setBlankType:(enum ATBlankType)blankType {
     _blankType = blankType;
-    if (!self.config.blankDic || self.config.blankDic.count == 0) {
+    if (!self.conf.blankDic || self.conf.blankDic.count == 0) {
         self.blank = defaultBlank(blankType);
     }else {
-        if (self.config.blankDic[@(blankType)]) {
-            self.blank = self.config.blankDic[@(blankType)];
+        if (self.conf.blankDic[@(blankType)]) {
+            self.blank = self.conf.blankDic[@(blankType)];
         }else {
             self.blank = defaultBlank(blankType);
         }
@@ -162,63 +167,42 @@
 
     __weak __typeof(&*self)weakSelf = self;
     self.blank.tapBlock = ^{
-        if (!weakSelf.blank.imageAnimating) {
-            weakSelf.blank.imageAnimating = YES;
-            [weakSelf.listView reloadBlankData];
-            [weakSelf loadNew];
+        if (!weakSelf.blank.isAnimating) {
+            weakSelf.blank.isAnimating = YES;
+            [weakSelf.listView reloadBlank];
+            [weakSelf loadNewData];
         }
     };
     
     [self.listView setBlank:self.blank];
-    [self.listView reloadBlankData];
+    [self.listView reloadBlank];
 }
 
 #pragma mark - public
 
-- (void)setConfig:(nullable ATConfig *)config; {
-    if (config == nil) {
-        config = [ATConfig new];
-    }
-    _config = config;
-    switch (self.config.loadType) {
-        case ATLoadTypeNone:{
-            self.listView.mj_header = nil;
-            break;
-        }
-        case ATLoadTypeNew:
-        case ATLoadTypeMore:
-        case ATLoadTypeAll:{
-            if (config.loadStrategy == ATLoadStrategyAuto) {
-                self.listView.mj_header = self.header;
-            }
-            break;
-        }
-    }
-}
-
 - (void)finish:(nullable NSError *)error {
-    if (self.blank.isImageAnimating) {
-        self.blank.imageAnimating = NO;
+    if (self.blank.isAnimating) {
+        self.blank.isAnimating = NO;
     }
-    [self.listView reloadBlankData];
+    [self.listView reloadBlank];
     
-    if (self.config.loadType == ATLoadTypeNone) {
+    if (self.conf.loadType == ATLoadTypeNone) {
         self.loadStatus = ATLoadStatusNew;
     }
     
     if (self.loadStatus == ATLoadStatusNew) {
         [self.listView.mj_header endRefreshing];
         [self.listView.mj_footer resetNoMoreData];
-        if (self.listView.at_itemsCount == 0) {
+        if (self.listView.itemsCount == 0) {
             if (error) {
                 self.blankType = ATBlankTypeFailure;
             }else {
                 self.blankType = ATBlankTypeNoData;
             }
         }else {
-            if (self.config.loadType == ATLoadTypeAll) {
-                if (self.listView.at_itemsCount >= self.config.length) {
-                    if (self.config.loadStrategy == ATLoadStrategyAuto) {
+            if (self.conf.loadType == ATLoadTypeAll) {
+                if (self.listView.itemsCount >= self.conf.length) {
+                    if (self.conf.loadStrategy == ATLoadStrategyAuto) {
                         self.listView.mj_footer = self.footer;
                     }
                 }else {
@@ -227,7 +211,7 @@
             }
         }
     }else if (self.loadStatus == ATLoadStatusMore) {
-        if ((self.listView.at_itemsCount - self.lastItemCount) < self.range.length) {
+        if ((self.listView.itemsCount - self.lastItemCount) < self.range.length) {
             [self.listView.mj_footer endRefreshingWithNoMoreData];
         }else {
             self.listView.mj_footer = self.footer;
@@ -238,15 +222,15 @@
     [self reloadData];
     self.loadStatus = ATLoadStatusIdle;
     
-    self.lastItemCount = self.listView.at_itemsCount;
+    self.lastItemCount = self.listView.itemsCount;
 }
 
-- (void)loadNew {
+- (void)loadNewData {
     self.loadStatus = ATLoadStatusNew;
-    self.range = NSMakeRange(0, self.config.length);
+    self.range = NSMakeRange(0, self.conf.length);
     self.lastItemCount = 0;
     
-    SEL loadNewSEL = NSSelectorFromString(@"loadNew");
+    SEL loadNewSEL = NSSelectorFromString(@"loadNewData");
     AT_SAFE_PERFORM_SELECTOR(self.listView, loadNewSEL, nil);
 }
 
@@ -257,37 +241,35 @@
 @end
 
 
-@implementation ATCenter
+@implementation ATListDefaultConf
 
-+ (instancetype)center {
++ (instancetype)conf {
     return [[[self class] alloc] init];
 }
 
-+ (instancetype)defaultCenter {
++ (instancetype)defaultConf {
     static id sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedInstance = [self center];
+        sharedInstance = [self conf];
     });
     return sharedInstance;
 }
 
 - (instancetype)init {
     self = [super init];
-    if (!self) {
-        return nil;
-    }
+    if (!self) return nil;
     return self;
 }
 
-- (void)setupConfig:(void(^)(ATConfig * _Nonnull config))block {
-    ATConfig *config = [ATConfig new];
-    AT_SAFE_BLOCK(block, config);
-    self.config = config;
+- (void)setupConf:(void(^)(ATListConf * _Nonnull conf))block {
+    ATListConf *conf = [ATListConf new];
+    AT_SAFE_BLOCK(block, conf);
+    self.conf = conf;
 }
 
-+ (void)setupConfig:(void(^)(ATConfig * _Nonnull config))block {
-    [[ATCenter defaultCenter] setupConfig:block];
++ (void)setupConf:(void(^)(ATListConf * _Nonnull conf))block {
+    [[ATListDefaultConf defaultConf] setupConf:block];
 }
 
 @end

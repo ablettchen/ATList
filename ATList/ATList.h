@@ -8,21 +8,14 @@
 //
 
 #import <Foundation/Foundation.h>
+
+#if __has_include(<ATblank/ATBlank.h>)
+#import <ATblank/ATBlank.h>
+#else
 #import "ATBlank.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
-
-#define AT_SAFE_BLOCK(BlockName, ...) ({ !BlockName ? nil : BlockName(__VA_ARGS__); })
-#define AT_SAFE_PERFORM_SELECTOR(Obj, Sel, Arg) ({ \
-    BOOL perform = NO; \
-    if (Obj && Sel) { \
-        if ([Obj respondsToSelector:Sel]) { \
-            [Obj performSelectorOnMainThread:Sel withObject:Arg waitUntilDone:YES]; \
-            perform = YES; \
-            } \
-    } \
-    (perform); \
-})
 
 typedef NS_OPTIONS(NSUInteger, ATLoadType) {
     ATLoadTypeNone = 0,                             ///< 无
@@ -33,7 +26,7 @@ typedef NS_OPTIONS(NSUInteger, ATLoadType) {
 
 typedef NS_ENUM(NSUInteger, ATLoadStrategy) {
     ATLoadStrategyAuto,                             ///< 自动，马上进入加载状态
-    ATLoadStrategyManual,                           ///< 手动，list.loadNew(); 进行加载，且loadType自动设置为ATLoadTypeNone
+    ATLoadStrategyManual,                           ///< 手动，list.loadNewData(); 进行加载
 };
 
 typedef NS_ENUM(NSUInteger, ATLoadStatus) {
@@ -42,12 +35,14 @@ typedef NS_ENUM(NSUInteger, ATLoadStatus) {
     ATLoadStatusMore,                               ///< 上拉加载
 };
 
-@interface ATConfig : NSObject
+@interface ATListConf : NSObject
 
 @property (assign, nonatomic) ATLoadType loadType;                                      ///< 加载类型，默认:ATLoadTypeNew
 @property (assign, nonatomic) enum ATLoadStrategy loadStrategy;                         ///< 加载策略，默认:ATLoadStrategyAuto
 @property (assign, nonatomic) NSUInteger length;                                        ///< 加载长度
 @property (strong, nonatomic, nullable) NSDictionary <NSNumber *, ATBlank *>*blankDic;  ///< 空白页配置
+
+- (void)reset;
 
 @end
 
@@ -55,33 +50,30 @@ typedef NS_ENUM(NSUInteger, ATLoadStatus) {
 
 @interface ATList : NSObject
 
-@property (strong, readonly, nonatomic, nonnull) ATConfig *config;                      ///< 配置
-@property (assign, readonly, nonatomic) enum ATLoadStatus loadStatus;                   ///< 加载状态
-@property (assign, readonly, nonatomic) NSRange range;                                  ///< 数据范围
-
-/** 设置配置项 */
-- (void)setConfig:(nullable ATConfig *)config;
+@property (strong, nonatomic, nonnull) ATListConf *conf;                        ///< 配置
+@property (assign, readonly, nonatomic) enum ATLoadStatus loadStatus;           ///< 加载状态
+@property (assign, readonly, nonatomic) NSRange range;                          ///< 数据范围
 
 /** 结束加载 */
 - (void)finish:(nullable NSError *)error;
 
 /** 加载新数据*/
-- (void)loadNew;
+- (void)loadNewData;
 
 /** 进入刷新状态 */
 - (void)beginning;
 
 @end
 
-@interface ATCenter : NSObject
+@interface ATListDefaultConf : NSObject
 
-@property (strong, nonatomic, nullable) ATConfig *config;
+@property (strong, nonatomic, nullable) ATListConf *conf;
 
-+ (instancetype)center;
-+ (instancetype)defaultCenter;
++ (instancetype)conf;
++ (instancetype)defaultConf;
 
-- (void)setupConfig:(void(^)(ATConfig * _Nonnull config))block;
-+ (void)setupConfig:(void(^)(ATConfig * _Nonnull config))block;
+- (void)setupConf:(void(^)(ATListConf * _Nonnull conf))block;
++ (void)setupConf:(void(^)(ATListConf * _Nonnull conf))block;
 
 @end
 

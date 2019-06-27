@@ -14,9 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIScrollView (ATList)
 
-@property (strong, readonly, nonatomic, nonnull) ATList *at_list;
+@property (strong, readonly, nonatomic, nonnull) ATList *atList;
 
-- (void)loadConfig:(nullable void(^)(ATConfig * _Nonnull config))block start:(void(^)(ATList * _Nonnull list))start;
+- (void)updateListConf:(nullable void(^)(ATListConf * _Nonnull conf))block;
+- (void)loadListData:(void(^)(ATList * _Nonnull list))block;
 
 @end
 

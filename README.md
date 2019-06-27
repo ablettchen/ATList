@@ -10,28 +10,26 @@
 1. 通用配置(可选，如不配置，则使用默认)
 
 ```objectiveC
-#import "UIScrollView+ATList.h"
+#import <UIScrollView+ATList.h>
 @implementation ATAppDelegate
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOption {
     // Override point for customization after application launch.
     
-    [ATCenter setupConfig:^(ATConfig * _Nonnull config) {
-        config.loadType = ATLoadTypeAll;
-        config.loadStrategy = ATLoadStrategyAuto;
+    [ATListDefaultConf setupConf:^(ATListConf * _Nonnull conf) {
+        conf.loadType = ATLoadTypeAll;
+        conf.loadStrategy = ATLoadStrategyAuto;
         
-        ATBlank *failureBlank = blankMake(blankImage(ATBlankTypeFailure), @"数据请求失败☹️", @"200014");
+        ATBlank *failureBlank = blankMake(blankImage(ATBlankTypeFailure), @"数据请求失败☹️", @"10014");
         ATBlank *noDataBlank = blankMake(blankImage(ATBlankTypeNoData), @"暂时没有数据🙂", @"哈哈哈~");
-        noDataBlank.tapEnable = NO;
         ATBlank *noNetworkBlank = blankMake(blankImage(ATBlankTypeNoNetwork), @"貌似没有网络🙄", @"请检查设置");
+        noDataBlank.isTapEnable = NO;
 
-        config.blankDic = @{@(ATBlankTypeFailure)   : failureBlank,
-                            @(ATBlankTypeNoData)    : noDataBlank,
-                            @(ATBlankTypeNoNetwork) : noNetworkBlank,
-                            };
+        conf.blankDic = @{@(ATBlankTypeFailure)   : failureBlank,
+                          @(ATBlankTypeNoData)    : noDataBlank,
+                          @(ATBlankTypeNoNetwork) : noNetworkBlank,};
         
-        config.length = 18;
+        conf.length = 20;
     }];
     
     return YES;
@@ -41,39 +39,32 @@
 2. 具体页面中使用
 
 ```objectiveC
-#import "UIScrollView+ATList.h"
-//加载数据
-__weak __typeof(&*self)weakSelf = self;
-[self.tableView loadConfig:^(ATConfig * _Nonnull config) {
-    
-    // 1. 针对具体页面进行配置（可选）；
-    //config.loadType = ATLoadTypeNew;
-    //config.loadStrategy = ATLoadStrategyAuto;
-    //config.blankDic = @{@(ATBlankTypeFailure) : blankMake(blankImage(ATBlankTypeFailure), @"绘本数据加载失败", @"40015")};
-    //config.length = 15;
-    
-} start:^(ATList * _Nonnull list) {
-    
-    // 2. 发起请求；
-    NSDictionary *parameters = @{@"offset"  : @(list.range.location),
-                                 @"number"  : @(list.range.length)};
-    __strong __typeof(&*self)strongSelf = weakSelf;
-    [weakSelf requestData:parameters finished:^(NSError *error, NSArray *datas) {
-    
-        // 3. 添加数据（当前加载状态为下拉刷新时移除旧数据）；
-        if (list.loadStatus == ATLoadStatusNew) [strongSelf.datas removeAllObjects];
-        if (datas && datas.count > 0) [strongSelf.datas addObjectsFromArray:datas];
-        
-        // 4. 刷新页面。
-        [list finish:error];
-    }];
-}];
+#import <UIScrollView+ATList.h>
 
-/** 若 config.loadStrategy = ATLoadStrategyManual，则需要手动调用 [self.tableView.at_list loadNew];
-dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-    [self.tableView.at_list loadNew];
-});
- */
+    @weakify(self);
+    [self.tableView updateListConf:^(ATListConf * _Nonnull conf) {
+        conf.loadType = ATLoadTypeAll;
+        conf.loadStrategy = ATLoadStrategyAuto;
+        conf.blankDic = @{@(ATBlankTypeFailure) : blankMake(blankImage(ATBlankTypeFailure), @"绘本数据加载失败", @"10015")};
+        conf.length = 20;
+    }];
+    
+    [self.tableView loadListData:^(ATList * _Nonnull list) {
+        NSDictionary *parameters = @{@"offset"  : @(list.range.location),
+                                     @"number"  : @(list.range.length)};
+        @strongify(self);
+        [self requestData:parameters finished:^(NSError *error, NSArray *datas) {
+            if (list.loadStatus == ATLoadStatusNew) [self.datas removeAllObjects];
+            if (datas && datas.count > 0) [self.datas addObjectsFromArray:datas];
+            [list finish:error];
+        }];
+    }];
+
+    /** 若 config.loadStrategy = ATLoadStrategyManual，则需要手动调用 [self.tableView.at_list loadNew];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self.tableView.atList loadNewData];
+    });
+    */
 ```
 
 ## Requirements

@@ -1,13 +1,8 @@
 use_frameworks!
-
+inhibit_all_warnings!
 platform :ios, '8.0'
 
 target 'ATList_Example' do
   pod 'ATList', :path => '../'
 
-  target 'ATList_Tests' do
-    inherit! :search_paths
-
-    
-  end
 end

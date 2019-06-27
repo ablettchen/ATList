@@ -8,7 +8,10 @@
 //
 
 #import "ATViewController.h"
-#import "UIScrollView+ATList.h"
+#import <UIScrollView+ATList.h>
+#import <UIScrollView+ATBlank.h>
+#import <ATCategories/ATCategories.h>
+#import <Masonry/Masonry.h>
 
 @interface ATViewController ()<UITableViewDataSource, UITableViewDelegate>
 @property (strong, nonatomic) UITableView *tableView;
@@ -17,44 +20,49 @@
 
 @implementation ATViewController
 
+- (instancetype)init {
+    self = [super init];
+    if (!self) return nil;
+    self.navigationItem.title = @"ATList";
+    self.datas = [NSMutableArray array];
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+
+    self.extendedLayoutIncludesOpaqueBars = NO;
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+
+    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.view);
+    }];
     
-    [self.view addSubview:self.tableView];
-    self.tableView.frame = self.view.bounds;
+    @weakify(self);
+    [self.tableView updateListConf:^(ATListConf * _Nonnull conf) {
+        conf.loadType = ATLoadTypeAll;
+        conf.loadStrategy = ATLoadStrategyAuto;
+        conf.blankDic = @{@(ATBlankTypeFailure) : blankMake(blankImage(ATBlankTypeFailure), @"绘本数据加载失败", @"10015")};
+        conf.length = 20;
+    }];
     
-    self.datas = [NSMutableArray array];
-    
-    //加载数据
-    __weak __typeof(&*self)weakSelf = self;
-    [self.tableView loadConfig:^(ATConfig * _Nonnull config) {
-        
-        //config.loadType = ATLoadTypeNew;
-        //config.loadStrategy = ATLoadStrategyAuto;
-        //config.blankDic = @{@(ATBlankTypeFailure) : blankMake(blankImage(ATBlankTypeFailure), @"绘本数据加载失败", @"40015")};
-        //config.length = 15;
-        
-    } start:^(ATList * _Nonnull list) {
+    [self.tableView loadListData:^(ATList * _Nonnull list) {
         NSDictionary *parameters = @{@"offset"  : @(list.range.location),
                                      @"number"  : @(list.range.length)};
-        __strong __typeof(&*self)strongSelf = weakSelf;
-        [weakSelf requestData:parameters finished:^(NSError *error, NSArray *datas) {
-            //3. 添加数据
-            //当前加载状态为下拉刷新时移除旧数据
-            if (list.loadStatus == ATLoadStatusNew) [strongSelf.datas removeAllObjects];
-            if (datas && datas.count > 0) [strongSelf.datas addObjectsFromArray:datas];
-            //4. 刷新
+        @strongify(self);
+        [self requestData:parameters finished:^(NSError *error, NSArray *datas) {
+            if (list.loadStatus == ATLoadStatusNew) [self.datas removeAllObjects];
+            if (datas && datas.count > 0) [self.datas addObjectsFromArray:datas];
             [list finish:error];
         }];
-
     }];
 
     /** 若 config.loadStrategy = ATLoadStrategyManual，则需要手动调用 [self.tableView.at_list loadNew];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self.tableView.at_list loadNew];
+        [self.tableView.atList loadNewData];
     });
-     */
+    */
 }
 
 - (void)didReceiveMemoryWarning {
@@ -75,6 +83,10 @@
         _tableView.estimatedRowHeight = 0.f;
         _tableView.estimatedSectionHeaderHeight = 0.f;
         _tableView.estimatedSectionFooterHeight = 0.f;
+        _tableView.layer.borderWidth = 1.f;
+        _tableView.layer.borderColor = [UIColor redColor].CGColor;
+        [self.view addSubview:_tableView];
+        adjustsScrollViewInsets_NO(_tableView, self);
     }
     return _tableView;
 }
@@ -130,6 +142,7 @@ NS_INLINE NSError *errorMake(NSString *domain, NSInteger code, NSString *descrip
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     cell.textLabel.text = [NSString stringWithFormat:@"%d", [self.datas[indexPath.row] intValue]];
+    if ((indexPath.row % 2) == 0) {cell.backgroundColor = UIColorHex(0x1515151A);}
     return cell;
 }
 
