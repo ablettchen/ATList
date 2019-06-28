@@ -39,6 +39,7 @@
         make.edges.equalTo(self.view);
     }];
     
+    // 可选，如不设置，取 ATListDefaultConf().conf
     @weakify(self);
     [self.tableView updateListConf:^(ATListConf * _Nonnull conf) {
         conf.loadType = ATLoadTypeAll;
@@ -46,7 +47,8 @@
         conf.blankDic = @{@(ATBlankTypeFailure) : blankMake(blankImage(ATBlankTypeFailure), @"绘本数据加载失败", @"10015")};
         conf.length = 20;
     }];
-    
+
+    // 加载列表数据
     [self.tableView loadListData:^(ATList * _Nonnull list) {
         NSDictionary *parameters = @{@"offset"  : @(list.range.location),
                                      @"number"  : @(list.range.length)};
@@ -58,11 +60,10 @@
         }];
     }];
 
-    /** 若 config.loadStrategy = ATLoadStrategyManual，则需要手动调用 [self.tableView.at_list loadNew];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self.tableView.atList loadNewData];
+        // 若 config.loadStrategy = ATLoadStrategyManual，则需要手动调用 [self.tableView.at_list loadNew];
+        //[self.tableView.atList loadNewData];
     });
-    */
 }
 
 - (void)didReceiveMemoryWarning {
@@ -83,8 +84,9 @@
         _tableView.estimatedRowHeight = 0.f;
         _tableView.estimatedSectionHeaderHeight = 0.f;
         _tableView.estimatedSectionFooterHeight = 0.f;
-        _tableView.layer.borderWidth = 1.f;
-        _tableView.layer.borderColor = [UIColor redColor].CGColor;
+        _tableView.layer.borderWidth = 3.f;
+        _tableView.layer.borderColor = [[UIColor redColor] colorWithAlphaComponent:0.5].CGColor;
+        _tableView.contentInset = UIEdgeInsetsMake(0, 0, 34, 0);
         [self.view addSubview:_tableView];
         adjustsScrollViewInsets_NO(_tableView, self);
     }
@@ -107,8 +109,8 @@
                 NSInteger value = range.location*range.length+i+1;
                 [models addObject:@(value)];
             }
-            //if (finished) finished(nil, models);
-            if (finished) finished(errorMake(nil, 500, @"unknow"), nil);
+            if (finished) finished(nil, models);
+            //if (finished) finished(errorMake(nil, 500, @"unknow"), nil);
             return;
         }else {
             for (int i=0; i<2; i++) {

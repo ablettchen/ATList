@@ -100,7 +100,7 @@ static char const * const kAtList = "kAtList";
     SEL setListViewSEL = NSSelectorFromString(@"setListView:");
     AT_SAFE_PERFORM_SELECTOR(self.atList, setListViewSEL, self);
 
-    ATListConf *conf = self.atList.conf?:[ATListDefaultConf defaultConf].conf;
+    ATListConf *conf = [ATListDefaultConf defaultConf].conf?:self.atList.conf;
     self.atList.conf = conf;
     
     if (self.atList.conf.loadStrategy == ATLoadStrategyAuto) {

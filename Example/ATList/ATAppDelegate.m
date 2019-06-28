@@ -17,10 +17,11 @@
     
     // Override point for customization after application launch.
 
+    /// 可选，如不设置，取默认conf
     [ATListDefaultConf setupConf:^(ATListConf * _Nonnull conf) {
         conf.loadType = ATLoadTypeAll;
         conf.loadStrategy = ATLoadStrategyAuto;
-        
+
         ATBlank *failureBlank = blankMake(blankImage(ATBlankTypeFailure), @"数据请求失败☹️", @"10014");
         ATBlank *noDataBlank = blankMake(blankImage(ATBlankTypeNoData), @"暂时没有数据🙂", @"哈哈哈~");
         ATBlank *noNetworkBlank = blankMake(blankImage(ATBlankTypeNoNetwork), @"貌似没有网络🙄", @"请检查设置");
@@ -29,7 +30,7 @@
         conf.blankDic = @{@(ATBlankTypeFailure)   : failureBlank,
                           @(ATBlankTypeNoData)    : noDataBlank,
                           @(ATBlankTypeNoNetwork) : noNetworkBlank,};
-        
+
         conf.length = 20;
     }];
     

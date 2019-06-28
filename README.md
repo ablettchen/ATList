@@ -16,6 +16,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOption {
     // Override point for customization after application launch.
     
+    // 可选，如不设置，取默认conf
     [ATListDefaultConf setupConf:^(ATListConf * _Nonnull conf) {
         conf.loadType = ATLoadTypeAll;
         conf.loadStrategy = ATLoadStrategyAuto;
@@ -41,6 +42,7 @@
 ```objectiveC
 #import <UIScrollView+ATList.h>
 
+    // 可选，如不设置，取 ATListDefaultConf().conf
     @weakify(self);
     [self.tableView updateListConf:^(ATListConf * _Nonnull conf) {
         conf.loadType = ATLoadTypeAll;
@@ -49,6 +51,7 @@
         conf.length = 20;
     }];
     
+    // 加载列表数据
     [self.tableView loadListData:^(ATList * _Nonnull list) {
         NSDictionary *parameters = @{@"offset"  : @(list.range.location),
                                      @"number"  : @(list.range.length)};
