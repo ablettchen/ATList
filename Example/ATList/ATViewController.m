@@ -107,8 +107,8 @@
                 NSInteger value = range.location*range.length+i+1;
                 [models addObject:@(value)];
             }
-            if (finished) finished(nil, models);
-            //if (finished) finished(errorMake(nil, 500, @"unknow"), nil);
+            //if (finished) finished(nil, models);
+            if (finished) finished(errorMake(nil, 500, @"unknow"), nil);
             return;
         }else {
             for (int i=0; i<2; i++) {
@@ -140,9 +140,21 @@ NS_INLINE NSError *errorMake(NSString *domain, NSInteger code, NSString *descrip
     if (!cell) {
         cell = [UITableViewCell new];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+        UIView *line = [UIView new];
+        [cell addSubview:line];
+        [line mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.bottom.right.equalTo(cell);
+            make.height.mas_equalTo(1/[UIScreen mainScreen].scale);
+        }];
+        
+        line.backgroundColor = ((indexPath.row % 2) == 0) ? \
+        [[UIColor blackColor] colorWithAlphaComponent:0.3] : \
+        [[UIColor redColor] colorWithAlphaComponent:0.3];
     }
+    
     cell.textLabel.text = [NSString stringWithFormat:@"%d", [self.datas[indexPath.row] intValue]];
-    if ((indexPath.row % 2) == 0) {cell.backgroundColor = UIColorHex(0x1515151A);}
+    
     return cell;
 }
 
