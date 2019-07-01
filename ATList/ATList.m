@@ -140,7 +140,7 @@
 
     self.loadStatus = ATLoadStatusMore;
     int loc = ceil((float)self.listView.itemsCount/self.conf.length)?:1;
-    self.range = NSMakeRange(loc, self.conf.length);
+    self.range = NSMakeRange(loc*self.conf.length, self.conf.length);
     
     SEL loadMoreSEL = NSSelectorFromString(@"loadMoreData");
     AT_SAFE_PERFORM_SELECTOR(self.listView, loadMoreSEL, nil);
