@@ -10,11 +10,12 @@
 #import "UIScrollView+ATList.h"
 #import <objc/runtime.h>
 
-#if __has_include(<UIScrollView+ATBlank.h>)
-#import <UIScrollView+ATBlank.h>
+#if __has_include(<ATBlank/UIScrollView+ATBlank.h>)
+#import <ATBlank/UIScrollView+ATBlank.h>
 #else
 #import "UIScrollView+ATBlank.h"
 #endif
+
 
 #if __has_include(<ATCategories/ATCategories.h>)
 #import <ATCategories/ATCategories.h>
