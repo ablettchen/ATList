@@ -9,8 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
-#if __has_include(<ATblank/ATBlank.h>)
-#import <ATblank/ATBlank.h>
+#if __has_include(<ATBlank/ATBlank.h>)
+#import <ATBlank/ATBlank.h>
 #else
 #import "ATBlank.h"
 #endif
