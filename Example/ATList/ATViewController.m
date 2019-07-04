@@ -16,6 +16,7 @@
 @interface ATViewController ()<UITableViewDataSource, UITableViewDelegate>
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) NSMutableArray *datas;
+@property (assign, nonatomic) BOOL addData;
 @end
 
 @implementation ATViewController
@@ -103,24 +104,23 @@
     NSRange range = NSMakeRange([parameters[@"offset"] intValue], [parameters[@"number"] intValue]);
     
     void (^block)(void) = ^(void) {
-        
         if (range.location < 2) {
             for (int i=0; i<range.length; i++) {
                 NSInteger value = range.location + i + 1;
                 [models addObject:@(value)];
             }
-            if (finished) finished(nil, models);
-            //if (finished) finished(errorMake(nil, 500, @"unknow"), nil);
-            return;
         }else {
             for (int i=0; i<2; i++) {
                 NSInteger value = range.location + i + 1;
                 [models addObject:@(value)];
             }
-            if (finished) finished(nil, models);
-            //if (finished) finished(errorMake(nil, 500, @"unknow"), nil);
-            return;
         }
+        if (self.addData) {
+            if (finished) finished(nil, models);
+        }else {
+            if (finished) finished(errorMake(nil, 500, @"unknow"), nil);
+        }
+        self.addData = YES;
     };
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), block);
 }
