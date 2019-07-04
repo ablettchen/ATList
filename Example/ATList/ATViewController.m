@@ -106,7 +106,7 @@
         
         if (range.location < 2) {
             for (int i=0; i<range.length; i++) {
-                NSInteger value = range.location*range.length+i+1;
+                NSInteger value = range.location + i + 1;
                 [models addObject:@(value)];
             }
             if (finished) finished(nil, models);
@@ -114,7 +114,7 @@
             return;
         }else {
             for (int i=0; i<2; i++) {
-                NSInteger value = range.location*range.length+i+1;
+                NSInteger value = range.location + i + 1;
                 [models addObject:@(value)];
             }
             if (finished) finished(nil, models);
