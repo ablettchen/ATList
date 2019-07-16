@@ -77,6 +77,8 @@ static char const * const kAtList = "kAtList";
     AT_SAFE_BLOCK(self.loadBlock, self.atList);
 }
 
+#pragma mark - public
+
 - (void)updateListConf:(nullable void(^)(ATListConf * _Nonnull conf))block {
     self.confBlock = block;
     
