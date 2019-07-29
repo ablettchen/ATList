@@ -8,35 +8,21 @@
 //
 
 #import "ATAppDelegate.h"
-#import "ATViewController.h"
-#import <UIScrollView+ATList.h>
+#import "ATViewConf.h"
+#import "ATExampleListController.h"
+
 
 @implementation ATAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     // Override point for customization after application launch.
-
-    /// 可选，如不设置，取默认conf
-    [ATListDefaultConf setupConf:^(ATListConf * _Nonnull conf) {
-        conf.loadType = ATLoadTypeAll;
-        conf.loadStrategy = ATLoadStrategyAuto;
-
-        ATBlank *failureBlank = blankMake(blankImage(ATBlankTypeFailure), @"数据请求失败☹️", @"10014");
-        ATBlank *noDataBlank = blankMake(blankImage(ATBlankTypeNoData), @"暂时没有数据🙂", @"哈哈哈~");
-        ATBlank *noNetworkBlank = blankMake(blankImage(ATBlankTypeNoNetwork), @"貌似没有网络🙄", @"请检查设置");
-        noDataBlank.isTapEnable = NO;
-
-        conf.blankDic = @{@(ATBlankTypeFailure)   : failureBlank,
-                          @(ATBlankTypeNoData)    : noDataBlank,
-                          @(ATBlankTypeNoNetwork) : noNetworkBlank,};
-
-        conf.length = 20;
-    }];
+    
+    [ATViewConf listConf];
     
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.window.backgroundColor = [UIColor whiteColor];
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:[ATViewController new]];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:[ATExampleListController new]];
     self.window.rootViewController = nav;
     [self.window makeKeyAndVisible];
     

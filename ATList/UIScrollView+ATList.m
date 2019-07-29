@@ -107,7 +107,8 @@ static char const * const kAtList = "kAtList";
     self.atList.conf = conf;
     
     if (self.atList.conf.loadStrategy == ATLoadStrategyAuto) {
-        if (self.atList.conf.loadType == ATLoadTypeNone) {
+        if (self.atList.conf.loadType == ATLoadTypeNone ||
+            self.atList.conf.loadType == ATLoadTypeMore) {
             
             ATLoadStatus loadStatus = ATLoadStatusNew;
             NSValue *loadStatusValue = [NSValue valueWithBytes:&loadStatus objCType:@encode(ATLoadStatus)];

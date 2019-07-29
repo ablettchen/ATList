@@ -1,5 +1,5 @@
 //
-//  ATViewController.m
+//  ATExampleController.m
 //  ATList
 //  https://github.com/ablettchen/ATList.git
 //
@@ -7,50 +7,56 @@
 //  Copyright (c) 2019 ablett. All rights reserved.
 //
 
-#import "ATViewController.h"
-#import <UIScrollView+ATList.h>
-#import <UIScrollView+ATBlank.h>
-#import <ATCategories/ATCategories.h>
-#import <Masonry/Masonry.h>
+#import "ATExampleController.h"
 
-@interface ATViewController ()<UITableViewDataSource, UITableViewDelegate>
+@interface ATExampleController ()<UITableViewDataSource, UITableViewDelegate>
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) NSMutableArray *datas;
-@property (assign, nonatomic) BOOL addData;
+@property (assign, nonatomic) BOOL addData; ///< 是否加载数据，模拟请求数据使用
 @end
 
-@implementation ATViewController
+@implementation ATExampleController
 
 - (instancetype)init {
     self = [super init];
     if (!self) return nil;
     self.navigationItem.title = @"ATList";
     self.datas = [NSMutableArray array];
+    _addData = YES; // self.addData == NO 则加载请求失败空白页
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    self.view.backgroundColor = UIColorHex(0xf6f6f6ff);
 
     self.extendedLayoutIncludesOpaqueBars = NO;
     self.edgesForExtendedLayout = UIRectEdgeNone;
+    
+    if (self.loadStrategy == ATLoadStrategyManual) {
+        self.navigationItem.rightBarButtonItem = \
+        [[UIBarButtonItem alloc] initWithTitle:@"手动加载"
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(loadDatas)];
+    }
 
     [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.view);
     }];
     
-    // 可选，如不设置，取 ATListDefaultConf().conf
+    // 具体列表配置（可选，如不设置，则取 ATListDefaultConf，ATListDefaultConf 未设置时取 conf）
     @weakify(self);
     [self.tableView updateListConf:^(ATListConf * _Nonnull conf) {
-        conf.loadType = ATLoadTypeAll;
-        conf.loadStrategy = ATLoadStrategyAuto;
+        conf.loadStrategy = self.loadStrategy;
+        conf.loadType = self.loadType;
         conf.blankDic = @{@(ATBlankTypeFailure) : blankMake(blankImage(ATBlankTypeFailure), @"绘本数据加载失败", @"10015")};
         conf.length = 20;
     }];
 
-    // 加载列表数据
-    [self.tableView loadListData:^(ATList * _Nonnull list) {
+    // 加载数据
+    [self.tableView loadListData:^(ATList * _Nonnull list) { 
         NSDictionary *parameters = @{@"offset"  : @(list.range.location),
                                      @"number"  : @(list.range.length)};
         @strongify(self);
@@ -60,11 +66,6 @@
             [list finish:error];
         }];
     }];
-
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        // 若 config.loadStrategy = ATLoadStrategyManual，则需要手动调用 [self.tableView.at_list loadNew];
-        //[self.tableView.atList loadNewData];
-    });
 }
 
 - (void)didReceiveMemoryWarning {
@@ -82,12 +83,14 @@
         _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         _tableView.tableFooterView = [UIView new];
         _tableView.backgroundColor = [UIColor clearColor];
+        _tableView.rowHeight = 44.f;
         _tableView.estimatedRowHeight = 0.f;
         _tableView.estimatedSectionHeaderHeight = 0.f;
         _tableView.estimatedSectionFooterHeight = 0.f;
         _tableView.layer.borderWidth = 3.f;
         _tableView.layer.borderColor = [[UIColor redColor] colorWithAlphaComponent:0.5].CGColor;
         _tableView.contentInset = UIEdgeInsetsMake(0, 0, 34, 0);
+        [_tableView registerClass:UITableViewCell.class forCellReuseIdentifier:NSStringFromClass(UITableViewCell.class)];
         [self.view addSubview:_tableView];
         adjustsScrollViewInsets_NO(_tableView, self);
     }
@@ -96,25 +99,45 @@
 
 #pragma mark - privite
 
-/** 模拟请求数据 */
+- (void)loadDatas {
+    [self.tableView.atList loadNewData];
+}
+
 - (void)requestData:(NSDictionary *)parameters
            finished:(void(^)(NSError *error, NSArray *datas))finished {
     NSLog(@"\nparameters:%@", parameters);
     NSMutableArray *models = [NSMutableArray array];
+    
     NSRange range = NSMakeRange([parameters[@"offset"] intValue], [parameters[@"number"] intValue]);
     
     void (^block)(void) = ^(void) {
-        if (range.location < 2) {
-            for (int i=0; i<range.length; i++) {
-                NSInteger value = range.location + i + 1;
-                [models addObject:@(value)];
-            }
-        }else {
-            for (int i=0; i<2; i++) {
-                NSInteger value = range.location + i + 1;
-                [models addObject:@(value)];
-            }
+        
+        switch (self.loadType) {
+            case ATLoadTypeNone:
+            case ATLoadTypeNew:{
+                for (int i=0; i<range.length; i++) {
+                    NSInteger value = range.location + i + 1;
+                    [models addObject:@(value)];
+                }
+            }break;
+            case ATLoadTypeMore:
+            case ATLoadTypeAll:{
+                if (range.location < 2) {
+                    for (int i=0; i<range.length; i++) {
+                        NSInteger value = range.location + i + 1;
+                        [models addObject:@(value)];
+                    }
+                }else {
+                    for (int i=0; i<2; i++) {
+                        NSInteger value = range.location + i + 1;
+                        [models addObject:@(value)];
+                    }
+                }
+            }break;
+            default:
+                break;
         }
+        
         if (self.addData) {
             if (finished) finished(nil, models);
         }else {
@@ -122,6 +145,7 @@
         }
         self.addData = YES;
     };
+    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), block);
 }
 
@@ -138,25 +162,10 @@ NS_INLINE NSError *errorMake(NSString *domain, NSInteger code, NSString *descrip
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"DemoCell"];
-    if (!cell) {
-        cell = [UITableViewCell new];
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        
-        UIView *line = [UIView new];
-        [cell addSubview:line];
-        [line mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.bottom.right.equalTo(cell);
-            make.height.mas_equalTo(1/[UIScreen mainScreen].scale);
-        }];
-        
-        line.backgroundColor = ((indexPath.row % 2) == 0) ? \
-        [[UIColor blackColor] colorWithAlphaComponent:0.3] : \
-        [[UIColor redColor] colorWithAlphaComponent:0.3];
-    }
-    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(UITableViewCell.class)];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.backgroundColor = (indexPath.row % 2 == 0) ? UIColorHex(0xffffffff) : UIColorHex(0x9999991A);
     cell.textLabel.text = [NSString stringWithFormat:@"%d", [self.datas[indexPath.row] intValue]];
-    
     return cell;
 }
 

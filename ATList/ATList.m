@@ -123,16 +123,14 @@
     }
     _conf = conf;
     switch (self.conf.loadType) {
-        case ATLoadTypeNone:{
+        case ATLoadTypeNone:
+        case ATLoadTypeMore:{
             self.listView.mj_header = nil;
             break;
         }
         case ATLoadTypeNew:
-        case ATLoadTypeMore:
         case ATLoadTypeAll:{
-            if (conf.loadStrategy == ATLoadStrategyAuto) {
-                self.listView.mj_header = self.header;
-            }
+            self.listView.mj_header = self.header;
             break;
         }
     }
@@ -141,7 +139,7 @@
 #pragma mark - privite
 
 - (void)loadMoreData {
-    if (self.loadStatus == ATLoadStatusNew) {return;}
+    if (self.loadStatus != ATLoadStatusIdle) {return;}
 
     self.loadStatus = ATLoadStatusMore;
     int loc = ceil((float)self.listView.itemsCount/self.conf.length)?:1;
@@ -188,11 +186,7 @@
 - (void)finish:(nullable NSError *)error {
     if (self.blank.isAnimating) {
         self.blank.isAnimating = NO;
-    }
-    [self.listView reloadBlank];
-    
-    if (self.conf.loadType == ATLoadTypeNone) {
-        self.loadStatus = ATLoadStatusNew;
+        [self.listView reloadBlank];
     }
     
     if (self.loadStatus == ATLoadStatusNew) {
@@ -205,11 +199,10 @@
                 self.blankType = ATBlankTypeNoData;
             }
         }else {
-            if (self.conf.loadType == ATLoadTypeAll) {
+            if (self.conf.loadType == ATLoadTypeMore || \
+                self.conf.loadType == ATLoadTypeAll) {
                 if (self.listView.itemsCount >= self.conf.length) {
-                    if (self.conf.loadStrategy == ATLoadStrategyAuto) {
-                        self.listView.mj_footer = self.footer;
-                    }
+                    self.listView.mj_footer = self.footer;
                 }else {
                     self.listView.mj_footer = nil;
                 }
@@ -231,10 +224,16 @@
 }
 
 - (void)loadNewData {
+    if (self.loadStatus != ATLoadStatusIdle) {return;}
+    
     self.loadStatus = ATLoadStatusNew;
     self.range = NSMakeRange(0, self.conf.length);
     self.lastItemCount = 0;
     
+    if (self.conf.loadStrategy == ATLoadStrategyManual &&
+        (self.conf.loadType == ATLoadTypeNew || ATLoadTypeAll)) {
+        [self beginning];
+    }
     SEL loadNewSEL = NSSelectorFromString(@"loadNewData");
     AT_SAFE_PERFORM_SELECTOR(self.listView, loadNewSEL, nil);
 }
