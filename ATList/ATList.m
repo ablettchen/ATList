@@ -189,6 +189,9 @@
         [self.listView reloadBlank];
     }
     
+    // 解决非控件触发的刷新（使用者直接调用 finish:）而导致 loadStatus 无法得到正确的状态，致使无线正确显示页面，故此处需要重设 loadStatus = ATLoadStatusNew
+    if (self.loadStatus == ATLoadStatusIdle) {self.loadStatus = ATLoadStatusNew;}
+    
     if (self.loadStatus == ATLoadStatusNew) {
         [self.listView.mj_header endRefreshing];
         [self.listView.mj_footer resetNoMoreData];
