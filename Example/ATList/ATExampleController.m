@@ -51,8 +51,8 @@
     [self.tableView updateListConf:^(ATListConf * _Nonnull conf) {
         conf.loadStrategy = self.loadStrategy;
         conf.loadType = self.loadType;
-        conf.blankDic = @{@(ATBlankTypeFailure) : blankMake(blankImage(ATBlankTypeFailure), @"绘本数据加载失败", @"10015")};
         conf.length = 20;
+        conf.blankDic = @{@(ATBlankTypeFailure) : blankMake(blankImage(ATBlankTypeFailure), @"绘本数据加载失败", @"10015")};
     }];
 
     // 加载数据
