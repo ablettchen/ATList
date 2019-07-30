@@ -232,7 +232,7 @@
     self.lastItemCount = 0;
     
     if (self.conf.loadStrategy == ATLoadStrategyManual &&
-        (self.conf.loadType == ATLoadTypeNew || ATLoadTypeAll)) {
+        (self.conf.loadType == ATLoadTypeNew || self.conf.loadType == ATLoadTypeAll)) {
         [self beginning];
     }
     SEL loadNewSEL = NSSelectorFromString(@"loadNewData");
