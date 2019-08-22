@@ -76,7 +76,7 @@
 
 - (ATRefreshHeader *)header {
     if (!_header) {
-        _header = [ATRefreshHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
+        _header = [ATRefreshHeader headerWithRefreshingTarget:self refreshingAction:@selector(pull_loadNewData)];
         [_header setTitle:@"下拉刷新" forState:MJRefreshStateIdle];
         [_header setTitle:@"释放更新" forState:MJRefreshStatePulling];
         [_header setTitle:@"加载中..." forState:MJRefreshStateRefreshing];
@@ -223,19 +223,24 @@
     self.lastItemCount = self.listView.itemsCount;
 }
 
-- (void)loadNewData {
+- (void)pull_loadNewData {
     if (self.loadStatus != ATLoadStatusIdle) {return;}
     
     self.loadStatus = ATLoadStatusNew;
     self.range = NSMakeRange(0, self.conf.length);
     self.lastItemCount = 0;
     
+    SEL loadNewSEL = NSSelectorFromString(@"loadNewData");
+    AT_SAFE_PERFORM_SELECTOR(self.listView, loadNewSEL, nil);
+}
+
+- (void)loadNewData {
     if (self.conf.loadStrategy == ATLoadStrategyManual &&
         (self.conf.loadType == ATLoadTypeNew || self.conf.loadType == ATLoadTypeAll)) {
         [self beginning];
+    }else {
+        [self pull_loadNewData];
     }
-    SEL loadNewSEL = NSSelectorFromString(@"loadNewData");
-    AT_SAFE_PERFORM_SELECTOR(self.listView, loadNewSEL, nil);
 }
 
 - (void)beginning {

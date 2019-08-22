@@ -221,6 +221,11 @@
 				CLASSPREFIX = AT;
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = ablett;
+				TargetAttributes = {
+					6003F589195388D20070C39A = {
+						DevelopmentTeam = 37Z4FSY7RD;
+					};
+				};
 			};
 			buildConfigurationList = 6003F585195388D10070C39A /* Build configuration list for PBXProject "ATList" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -448,6 +453,7 @@
 			baseConfigurationReference = 52CDC82419DCE62EAEFEA3C9 /* Pods-ATList_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 37Z4FSY7RD;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ATList/ATList-Prefix.pch";
 				INFOPLIST_FILE = "ATList/ATList-Info.plist";
@@ -463,6 +469,7 @@
 			baseConfigurationReference = 837176D94E82B9655D67B11A /* Pods-ATList_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 37Z4FSY7RD;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ATList/ATList-Prefix.pch";
 				INFOPLIST_FILE = "ATList/ATList-Info.plist";
