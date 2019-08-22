@@ -247,15 +247,11 @@
 
 @implementation ATListDefaultConf
 
-+ (instancetype)conf {
-    return [[[self class] alloc] init];
-}
-
 + (instancetype)defaultConf {
     static id sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedInstance = [self conf];
+        sharedInstance = [[[self class] alloc] init];
     });
     return sharedInstance;
 }
@@ -267,9 +263,9 @@
 }
 
 - (void)setupConf:(void(^)(ATListConf * _Nonnull conf))block {
-    ATListConf *listConf = [ATListConf new];
-    AT_SAFE_BLOCK(block, listConf);
-    self.listConf = listConf;
+    ATListConf *conf = [ATListConf new];
+    AT_SAFE_BLOCK(block, conf);
+    self.conf = conf;
 }
 
 + (void)setupConf:(void(^)(ATListConf * _Nonnull conf))block {

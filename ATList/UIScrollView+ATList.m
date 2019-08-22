@@ -105,7 +105,7 @@ static char const * const kAtList = "kAtList";
     
     ATListConf *conf = nil;
     if (self.atList.conf == nil) {
-        conf = [ATListDefaultConf defaultConf].listConf?:[ATListConf new];
+        conf = [ATListDefaultConf defaultConf].conf?:[ATListConf new];
     }else {
         conf = conf = self.atList.conf;
     }
