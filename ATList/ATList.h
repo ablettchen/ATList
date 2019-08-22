@@ -67,13 +67,13 @@ typedef NS_ENUM(NSUInteger, ATLoadStatus) {
 
 @interface ATListDefaultConf : NSObject
 
-@property (strong, nonatomic, nullable) ATListConf *conf;
+@property (strong, nonatomic, nullable) ATListConf *listConf;
 
 + (instancetype)conf;
 + (instancetype)defaultConf;
 
-- (void)setupConf:(void(^)(ATListConf * _Nonnull conf))block;
-+ (void)setupConf:(void(^)(ATListConf * _Nonnull conf))block;
+- (void)setupConf:(void(^)(ATListConf * _Nonnull listConf))block;
++ (void)setupConf:(void(^)(ATListConf * _Nonnull listConf))block;
 
 @end
 

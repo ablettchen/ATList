@@ -82,7 +82,8 @@ static char const * const kAtList = "kAtList";
 - (void)updateListConf:(nullable void(^)(ATListConf * _Nonnull conf))block {
     self.confBlock = block;
     
-    ATListConf *conf = [ATListDefaultConf defaultConf].conf?:self.atList.conf;
+    ATListConf *conf = self.atList.conf?:[ATListConf new];
+    
     AT_SAFE_BLOCK(block, conf);
     
     if (conf.length == 0) {
@@ -93,7 +94,6 @@ static char const * const kAtList = "kAtList";
             conf.length = dataLengthDefault;
         }
     }
-    
     self.atList.conf = conf;
 }
 
@@ -102,8 +102,13 @@ static char const * const kAtList = "kAtList";
     
     SEL setListViewSEL = NSSelectorFromString(@"setListView:");
     AT_SAFE_PERFORM_SELECTOR(self.atList, setListViewSEL, self);
-
-    ATListConf *conf = [ATListDefaultConf defaultConf].conf?:self.atList.conf;
+    
+    ATListConf *conf = nil;
+    if (self.atList.conf == nil) {
+        conf = [ATListDefaultConf defaultConf].listConf?:[ATListConf new];
+    }else {
+        conf = conf = self.atList.conf;
+    }
     self.atList.conf = conf;
     
     if (self.atList.conf.loadStrategy == ATLoadStrategyAuto) {

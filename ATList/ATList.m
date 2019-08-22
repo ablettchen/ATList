@@ -65,7 +65,6 @@
     self = [super init];
     if (!self) return nil;
     
-    self.conf = [ATListConf new];
     self.loadStatus = ATLoadStatusIdle;
     self.range = NSMakeRange(0, self.conf.length);
     self.lastItemCount = 0;
@@ -140,7 +139,7 @@
 
 - (void)loadMoreData {
     if (self.loadStatus != ATLoadStatusIdle) {return;}
-
+    
     self.loadStatus = ATLoadStatusMore;
     int loc = ceil((float)self.listView.itemsCount/self.conf.length)?:1;
     self.range = NSMakeRange(loc*self.conf.length, self.conf.length);
@@ -167,7 +166,7 @@
             self.blank = defaultBlank(blankType);
         }
     }
-
+    
     __weak __typeof(&*self)weakSelf = self;
     self.blank.tapBlock = ^{
         if (!weakSelf.blank.isAnimating) {
@@ -268,9 +267,9 @@
 }
 
 - (void)setupConf:(void(^)(ATListConf * _Nonnull conf))block {
-    ATListConf *conf = [ATListConf new];
-    AT_SAFE_BLOCK(block, conf);
-    self.conf = conf;
+    ATListConf *listConf = [ATListConf new];
+    AT_SAFE_BLOCK(block, listConf);
+    self.listConf = listConf;
 }
 
 + (void)setupConf:(void(^)(ATListConf * _Nonnull conf))block {
