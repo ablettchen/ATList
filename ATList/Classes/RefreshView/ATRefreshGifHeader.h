@@ -11,10 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ATRefreshGifHeader : MJRefreshGifHeader
-
-@property(strong, nonatomic, nonnull) NSArray<UIImage *>*idleImages;
 @property(strong, nonatomic, nonnull) NSArray<UIImage *>*refreshingImages;
-
 @end
 
 NS_ASSUME_NONNULL_END

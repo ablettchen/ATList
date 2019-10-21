@@ -48,7 +48,6 @@ typedef NS_ENUM(NSUInteger, ATLoadHeaderStyle) {
 @property (strong, nonatomic, nullable) NSDictionary <NSNumber *, ATBlank *>*blankDic;  ///< 空白页配置
 
 @property (assign, nonatomic) enum ATLoadHeaderStyle loadHeaderStyle;                   ///< 刷新头部样式，默认：ATLoadHeaderStyleNormal
-@property (strong, nonatomic, nonnull) NSArray<UIImage *>*idleImages;                   ///< 闲置时的图片组（下拉到刷新手之间）
 @property (strong, nonatomic, nonnull) NSArray<UIImage *>*refreshingImages;             ///< 刷新时的图片组
 
 - (void)reset;

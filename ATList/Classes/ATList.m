@@ -42,14 +42,13 @@
     self.blankDic = nil;
     self.loadHeaderStyle = ATLoadHeaderStyleNormal;
     
-    NSMutableArray *refreshingImages = [NSMutableArray array];
+    NSMutableArray *gifImages = [NSMutableArray array];
     for (int i = 0; i < 23; i++) {
-        NSString *imageName = [NSString stringWithFormat:@"refreshGif_%d", i+1];
-        UIImage *image = [UIImage imageNamed:imageName inBundle:[ATList listBundle]];
-        if (image) {[refreshingImages addObject:image];}
+        UIImage *image = [UIImage imageNamed:[NSString stringWithFormat:@"refreshGif_%d", i+1] inBundle:[ATList listBundle]];
+        if (image) {[gifImages addObject:image];}
     }
     // 设置默认Gif图片
-    self.refreshingImages = refreshingImages;
+    self.refreshingImages = gifImages;
 }
 
 @end
