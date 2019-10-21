@@ -43,7 +43,7 @@
     self.loadHeaderStyle = ATLoadHeaderStyleNormal;
     
     NSMutableArray *refreshingImages = [NSMutableArray array];
-    for (int i = 0; i < 33; i++) {
+    for (int i = 0; i < 23; i++) {
         NSString *imageName = [NSString stringWithFormat:@"refreshGif_%d", i+1];
         UIImage *image = [UIImage imageNamed:imageName inBundle:[ATList listBundle]];
         if (image) {[refreshingImages addObject:image];}
