@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ATList'
-  s.version          = '0.3.0'
+  s.version          = '0.3.1'
   s.summary          = 'Quick configuration pull-down refresh, pull-up loading, blank page, for UITableView, UICollectionView, UIScrollView.'
   s.homepage         = 'https://github.com/ablettchen/ATList'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
@@ -16,7 +16,10 @@ Pod::Spec.new do |s|
   s.social_media_url = 'https://weibo.com/ablettchen'
   s.platform         = :ios, '8.0'
   s.source           = { :git => 'https://github.com/ablettchen/ATList.git', :tag => s.version.to_s }
-  s.source_files     = 'ATList/**/*.{h,m}'
+  s.source_files     = 'ATList/Classes/**/*'
+  s.resource_bundles = {
+     'ATList' => ['ATList/Assets/*.xcassets']
+  }
   s.requires_arc     = true
   
   s.dependency 'MJRefresh'

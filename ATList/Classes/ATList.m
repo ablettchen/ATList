@@ -9,6 +9,7 @@
 
 #import "ATList.h"
 #import "ATRefreshHeader.h"
+#import "ATRefreshGifHeader.h"
 #import "ATRefreshFooter.h"
 
 #if __has_include(<ATBlank/UIScrollView+ATBlank.h>)
@@ -39,6 +40,16 @@
     self.loadStrategy = ATLoadStrategyAuto;
     self.length = 0;
     self.blankDic = nil;
+    self.loadHeaderStyle = ATLoadHeaderStyleNormal;
+    
+    NSMutableArray *refreshingImages = [NSMutableArray array];
+    for (int i = 0; i < 33; i++) {
+        NSString *imageName = [NSString stringWithFormat:@"refreshGif_%d", i+1];
+        UIImage *image = [UIImage imageNamed:imageName inBundle:[ATList listBundle]];
+        if (image) {[refreshingImages addObject:image];}
+    }
+    // 设置默认Gif图片
+    self.refreshingImages = refreshingImages;
 }
 
 @end
@@ -53,6 +64,7 @@
 
 @property (strong, nonatomic) __kindof UIScrollView *listView;              ///< 目标View
 @property (strong, nonatomic) ATRefreshHeader *header;                      ///< 刷新头
+@property (strong, nonatomic) ATRefreshGifHeader *gifHeader;                   ///< 刷新头
 @property (strong, nonatomic) ATRefreshFooter *footer;                      ///< 刷新尾
 @property (assign, nonatomic) enum ATBlankType blankType;                   ///< 空白页类型
 @property (strong, nonatomic) ATBlank *blank;                               ///< 空白页
@@ -68,7 +80,7 @@
     self.loadStatus = ATLoadStatusIdle;
     self.range = NSMakeRange(0, self.conf.length);
     self.lastItemCount = 0;
-    
+
     return self;
 }
 
@@ -88,6 +100,17 @@
         _header.lastUpdatedTimeLabel.hidden = YES;
     }
     return _header;
+}
+
+- (ATRefreshGifHeader *)gifHeader {
+    if (!_gifHeader) {
+        _gifHeader = [ATRefreshGifHeader headerWithRefreshingTarget:self refreshingAction:@selector(pull_loadNewData)];
+        _gifHeader.stateLabel.hidden = YES;
+        _gifHeader.automaticallyChangeAlpha = YES;
+        _gifHeader.lastUpdatedTimeLabel.hidden = YES;
+        _gifHeader.refreshingImages = self.conf.refreshingImages;
+    }
+    return _gifHeader;
 }
 
 - (ATRefreshFooter *)footer {
@@ -129,13 +152,22 @@
         }
         case ATLoadTypeNew:
         case ATLoadTypeAll:{
-            self.listView.mj_header = self.header;
+            if (self.conf.loadHeaderStyle == ATLoadHeaderStyleNormal) {
+                self.listView.mj_header = self.header;
+            }else if (self.conf.loadHeaderStyle == ATLoadHeaderStyleGif) {
+                self.listView.mj_header = self.gifHeader;
+            }
             break;
         }
     }
 }
 
 #pragma mark - privite
+
++ (NSBundle *)listBundle {
+    NSString *bundlePath = [[NSBundle bundleForClass:self.class].resourcePath stringByAppendingPathComponent:@"ATList.bundle"];
+    return [NSBundle bundleWithPath:bundlePath];
+}
 
 - (void)loadMoreData {
     if (self.loadStatus != ATLoadStatusIdle) {return;}
@@ -244,7 +276,11 @@
 }
 
 - (void)beginning {
-    [self.header beginRefreshing];
+    if (self.conf.loadHeaderStyle == ATLoadHeaderStyleNormal) {
+        [self.header beginRefreshing];
+    }else if (self.conf.loadHeaderStyle == ATLoadHeaderStyleGif) {
+        [self.gifHeader beginRefreshing];
+    }
 }
 
 @end

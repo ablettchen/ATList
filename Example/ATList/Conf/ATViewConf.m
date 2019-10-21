@@ -16,6 +16,7 @@
     [ATListDefaultConf setupConf:^(ATListConf * _Nonnull conf) {
         conf.loadType = ATLoadTypeAll;
         conf.loadStrategy = ATLoadStrategyAuto;
+        conf.loadHeaderStyle = ATLoadHeaderStyleGif;
         
         ATBlank *failureBlank = blankMake(blankImage(ATBlankTypeFailure), @"请求失败", @"10010");
         ATBlank *noDataBlank = blankMake(blankImage(ATBlankTypeNoData), @"暂无数据", @"10011");

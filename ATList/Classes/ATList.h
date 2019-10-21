@@ -35,12 +35,21 @@ typedef NS_ENUM(NSUInteger, ATLoadStatus) {
     ATLoadStatusMore,                               ///< 上拉加载
 };
 
+typedef NS_ENUM(NSUInteger, ATLoadHeaderStyle) {
+    ATLoadHeaderStyleNormal,                        ///< 默认
+    ATLoadHeaderStyleGif,                           ///< GIF
+};
+
 @interface ATListConf : NSObject
 
 @property (assign, nonatomic) ATLoadType loadType;                                      ///< 加载类型，默认:ATLoadTypeNew
 @property (assign, nonatomic) enum ATLoadStrategy loadStrategy;                         ///< 加载策略，默认:ATLoadStrategyAuto
 @property (assign, nonatomic) NSUInteger length;                                        ///< 加载长度
 @property (strong, nonatomic, nullable) NSDictionary <NSNumber *, ATBlank *>*blankDic;  ///< 空白页配置
+
+@property (assign, nonatomic) enum ATLoadHeaderStyle loadHeaderStyle;                   ///< 刷新头部样式，默认：ATLoadHeaderStyleNormal
+@property (strong, nonatomic, nonnull) NSArray<UIImage *>*idleImages;                   ///< 闲置时的图片组（下拉到刷新手之间）
+@property (strong, nonatomic, nonnull) NSArray<UIImage *>*refreshingImages;             ///< 刷新时的图片组
 
 - (void)reset;
 
@@ -62,6 +71,8 @@ typedef NS_ENUM(NSUInteger, ATLoadStatus) {
 
 /** 进入刷新状态 */
 - (void)beginning;
+
++ (NSBundle *)listBundle;
 
 @end
 

@@ -82,7 +82,8 @@ static char const * const kAtList = "kAtList";
 - (void)updateListConf:(nullable void(^)(ATListConf * _Nonnull conf))block {
     self.confBlock = block;
     
-    ATListConf *conf = self.atList.conf?:[ATListConf new];
+    //ATListConf *conf = self.atList.conf?:[ATListConf new];
+    ATListConf *conf = self.atList.conf?:([ATListDefaultConf defaultConf].conf?:[ATListConf new]);
     AT_SAFE_BLOCK(block, conf);
     
     if (conf.length == 0) {
