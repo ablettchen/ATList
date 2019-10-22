@@ -24,7 +24,7 @@
 #import "ATCategories.h"
 #endif
 
-@interface ATListConf ()
+@interface ATListConf ()<NSCopying>
 @end
 @implementation ATListConf
 
@@ -49,6 +49,17 @@
     }
     // 设置默认Gif图片
     self.refreshingImages = gifImages;
+}
+
+- (id)copyWithZone:(NSZone __unused *)zone {
+    ATListConf *conf = [ATListConf new];
+    conf.loadType = self.loadType;
+    conf.loadStrategy = self.loadStrategy;
+    conf.length = self.length;
+    conf.blankDic = self.blankDic;
+    conf.loadHeaderStyle = self.loadHeaderStyle;
+    conf.refreshingImages = self.refreshingImages;
+    return conf;
 }
 
 @end
