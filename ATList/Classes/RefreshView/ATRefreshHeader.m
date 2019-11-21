@@ -60,10 +60,10 @@
     // 箭头的中心点
     CGFloat arrowCenterX = self.mj_w * 0.5;
     if (!self.stateLabel.hidden) {
-        CGFloat stateWidth = self.stateLabel.mj_textWith;
+        CGFloat stateWidth = self.stateLabel.mj_w;
         CGFloat timeWidth = 0.0;
         if (!self.lastUpdatedTimeLabel.hidden) {
-            timeWidth = self.lastUpdatedTimeLabel.mj_textWith;
+            timeWidth = self.lastUpdatedTimeLabel.mj_w;
         }
         CGFloat textWidth = MAX(stateWidth, timeWidth);
         arrowCenterX -= textWidth / 2 + self.labelLeftInset;
