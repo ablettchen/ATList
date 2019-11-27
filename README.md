@@ -20,7 +20,7 @@
     
     // 列表配置（可选，如不设置，取默认）
     [ATListDefaultConf setupConf:^(ATListConf * _Nonnull conf) {
-        conf.loadType = ATLoadTypeAll;
+        conf.loadStyle = ATLoadStyleAll;
         conf.loadStrategy = ATLoadStrategyAuto;
         
         ATBlank *failureBlank = blankMake(blankImage(ATBlankTypeFailure), @"请求失败", @"10010");
@@ -48,7 +48,7 @@
     @weakify(self);
     [self.tableView updateListConf:^(ATListConf * _Nonnull conf) {
         conf.loadStrategy = self.loadStrategy;
-        conf.loadType = self.loadType;
+        conf.loadStyle = self.loadStyle;
         conf.blankDic = @{@(ATBlankTypeFailure) : blankMake(blankImage(ATBlankTypeFailure), @"绘本数据加载失败", @"10015")};
         conf.length = 20;
     }];

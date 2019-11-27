@@ -10,10 +10,10 @@
 
 @implementation ATExample
 
-+ (ATExample *)exampleWithLoadStrategy:(ATLoadStrategy)loadStrategy loadType:(ATLoadType)loadType {
++ (ATExample *)exampleWithLoadStrategy:(ATLoadStrategy)loadStrategy loadStyle:(ATLoadStyle)loadStyle {
     ATExample *model = [ATExample new];
     model.loadStrategy = loadStrategy;
-    model.loadType = loadType;
+    model.loadStyle = loadStyle;
     
     NSString *strategyDesc = nil;
     
@@ -29,17 +29,17 @@
     }
     
     NSString *typeDesc = nil;
-    switch (loadType) {
-        case ATLoadTypeNone:
+    switch (loadStyle) {
+        case ATLoadStyleNone:
             typeDesc = @"无刷新";
             break;
-        case ATLoadTypeNew:
+        case ATLoadStyleHeader:
             typeDesc = @"下拉刷新";
             break;
-        case ATLoadTypeMore:
+        case ATLoadStyleFooter:
             typeDesc = @"上拉加载";
             break;
-        case ATLoadTypeAll:
+        case ATLoadStyleAll:
             typeDesc = @"下拉刷新 + 上拉加载";
             break;
             

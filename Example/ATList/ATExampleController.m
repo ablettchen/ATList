@@ -50,7 +50,7 @@
     @weakify(self);
     [self.tableView updateListConf:^(ATListConf * _Nonnull conf) {
         conf.loadStrategy = self.loadStrategy;
-        conf.loadType = self.loadType;
+        conf.loadStyle = self.loadStyle;
         conf.length = 20;
         conf.blankDic = @{@(ATBlankTypeFailure) : blankMake(blankImage(ATBlankTypeFailure), @"绘本数据加载失败", @"10015")};
     }];
@@ -112,16 +112,16 @@
     
     void (^block)(void) = ^(void) {
         
-        switch (self.loadType) {
-            case ATLoadTypeNone:
-            case ATLoadTypeNew:{
+        switch (self.loadStyle) {
+            case ATLoadStyleNone:
+            case ATLoadStyleHeader:{
                 for (int i=0; i<range.length; i++) {
                     NSInteger value = range.location + i + 1;
                     [models addObject:@(value)];
                 }
             }break;
-            case ATLoadTypeMore:
-            case ATLoadTypeAll:{
+            case ATLoadStyleFooter:
+            case ATLoadStyleAll:{
                 if (range.location < 2) {
                     for (int i=0; i<range.length; i++) {
                         NSInteger value = range.location + i + 1;

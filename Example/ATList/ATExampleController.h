@@ -12,6 +12,6 @@
 @interface ATExampleController : UIViewController
 
 @property (assign, nonatomic) ATLoadStrategy loadStrategy;
-@property (assign, nonatomic) ATLoadType loadType;
+@property (assign, nonatomic) ATLoadStyle loadStyle;
 
 @end

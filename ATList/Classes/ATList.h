@@ -17,11 +17,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_OPTIONS(NSUInteger, ATLoadType) {
-    ATLoadTypeNone = 0,                             ///< 无
-    ATLoadTypeNew = 1 << 0,                         ///< 下拉刷新
-    ATLoadTypeMore = 1 << 1,                        ///< 上拉加载
-    ATLoadTypeAll = ATLoadTypeNew | ATLoadTypeMore  ///< 下拉刷新和上拉加载
+typedef NS_OPTIONS(NSUInteger, ATLoadStyle) {
+    ATLoadStyleNone = 0,                             ///< 无
+    ATLoadStyleHeader = 1 << 0,                         ///< 下拉刷新
+    ATLoadStyleFooter = 1 << 1,                        ///< 上拉加载
+    ATLoadStyleAll = ATLoadStyleHeader | ATLoadStyleFooter  ///< 下拉刷新和上拉加载
 };
 
 typedef NS_ENUM(NSUInteger, ATLoadStrategy) {
@@ -42,7 +42,7 @@ typedef NS_ENUM(NSUInteger, ATLoadHeaderStyle) {
 
 @interface ATListConf : NSObject
 
-@property (assign, nonatomic) ATLoadType loadType;                                      ///< 加载类型，默认:ATLoadTypeNew
+@property (assign, nonatomic) ATLoadStyle loadStyle;                                    ///< 加载类型，默认:ATLoadStyleHeader
 @property (assign, nonatomic) enum ATLoadStrategy loadStrategy;                         ///< 加载策略，默认:ATLoadStrategyAuto
 @property (assign, nonatomic) NSUInteger length;                                        ///< 加载长度
 @property (strong, nonatomic, nullable) NSDictionary <NSNumber *, ATBlank *>*blankDic;  ///< 空白页配置

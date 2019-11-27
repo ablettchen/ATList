@@ -69,15 +69,15 @@
 - (void)addDatas {
     [self.datas removeAllObjects];
     [self.datas addObjectsFromArray:@[
-                                      ATExampleMake(ATLoadStrategyAuto, ATLoadTypeNone),
-                                      ATExampleMake(ATLoadStrategyAuto, ATLoadTypeNew),
-                                      ATExampleMake(ATLoadStrategyAuto, ATLoadTypeMore),
-                                      ATExampleMake(ATLoadStrategyAuto, ATLoadTypeAll),
+                                      ATExampleMake(ATLoadStrategyAuto, ATLoadStyleNone),
+                                      ATExampleMake(ATLoadStrategyAuto, ATLoadStyleHeader),
+                                      ATExampleMake(ATLoadStrategyAuto, ATLoadStyleFooter),
+                                      ATExampleMake(ATLoadStrategyAuto, ATLoadStyleAll),
                                       
-                                      ATExampleMake(ATLoadStrategyManual, ATLoadTypeNone),
-                                      ATExampleMake(ATLoadStrategyManual, ATLoadTypeNew),
-                                      ATExampleMake(ATLoadStrategyManual, ATLoadTypeMore),
-                                      ATExampleMake(ATLoadStrategyManual, ATLoadTypeAll),
+                                      ATExampleMake(ATLoadStrategyManual, ATLoadStyleNone),
+                                      ATExampleMake(ATLoadStrategyManual, ATLoadStyleHeader),
+                                      ATExampleMake(ATLoadStrategyManual, ATLoadStyleFooter),
+                                      ATExampleMake(ATLoadStrategyManual, ATLoadStyleAll),
                                       ]];
 }
 
@@ -105,7 +105,7 @@
     ATExample *example = self.datas[indexPath.row];
     ATExampleController *exampleVC = [ATExampleController new];
     exampleVC.loadStrategy = example.loadStrategy;
-    exampleVC.loadType = example.loadType;
+    exampleVC.loadStyle = example.loadStyle;
     exampleVC.navigationItem.title = example.title;
     [self.navigationController pushViewController:exampleVC animated:YES];
     

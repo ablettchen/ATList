@@ -14,7 +14,7 @@
 + (void)listConf {
     // 列表配置（可选，如不设置，取默认）
     [ATListDefaultConf setupConf:^(ATListConf * _Nonnull conf) {
-        conf.loadType = ATLoadTypeAll;
+        conf.loadStyle = ATLoadStyleAll;
         conf.loadStrategy = ATLoadStrategyAuto;
         conf.loadHeaderStyle = ATLoadHeaderStyleNormal;
         

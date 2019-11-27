@@ -36,7 +36,7 @@
 }
 
 - (void)reset {
-    self.loadType = ATLoadTypeNew;
+    self.loadStyle = ATLoadStyleHeader;
     self.loadStrategy = ATLoadStrategyAuto;
     self.length = 0;
     self.blankDic = nil;
@@ -53,7 +53,7 @@
 
 - (id)copyWithZone:(NSZone __unused *)zone {
     ATListConf *conf = [ATListConf new];
-    conf.loadType = self.loadType;
+    conf.loadStyle = self.loadStyle;
     conf.loadStrategy = self.loadStrategy;
     conf.length = self.length;
     conf.blankDic = self.blankDic;
@@ -154,14 +154,14 @@
         conf = [ATListConf new];
     }
     _conf = conf;
-    switch (self.conf.loadType) {
-        case ATLoadTypeNone:
-        case ATLoadTypeMore:{
+    switch (self.conf.loadStyle) {
+        case ATLoadStyleNone:
+        case ATLoadStyleFooter:{
             self.listView.mj_header = nil;
             break;
         }
-        case ATLoadTypeNew:
-        case ATLoadTypeAll:{
+        case ATLoadStyleHeader:
+        case ATLoadStyleAll:{
             if (self.conf.loadHeaderStyle == ATLoadHeaderStyleNormal) {
                 self.listView.mj_header = self.header;
             }else if (self.conf.loadHeaderStyle == ATLoadHeaderStyleGif) {
@@ -241,8 +241,8 @@
                 self.blankType = ATBlankTypeNoData;
             }
         }else {
-            if (self.conf.loadType == ATLoadTypeMore || \
-                self.conf.loadType == ATLoadTypeAll) {
+            if (self.conf.loadStyle == ATLoadStyleFooter || \
+                self.conf.loadStyle == ATLoadStyleAll) {
                 if (self.listView.itemsCount >= self.conf.length) {
                     self.listView.mj_footer = self.footer;
                 }else {
@@ -278,7 +278,7 @@
 
 - (void)loadNewData {
     if (self.conf.loadStrategy == ATLoadStrategyManual &&
-        (self.conf.loadType == ATLoadTypeNew || self.conf.loadType == ATLoadTypeAll)) {
+        (self.conf.loadStyle == ATLoadStyleHeader || self.conf.loadStyle == ATLoadStyleAll)) {
         [self beginning];
     }else {
         [self pull_loadNewData];

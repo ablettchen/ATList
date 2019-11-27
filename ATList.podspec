@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ATList'
-  s.version          = '0.3.5'
+  s.version          = '0.3.6'
   s.summary          = 'Quick configuration pull-down refresh, pull-up loading, blank page, for UITableView, UICollectionView, UIScrollView.'
   s.homepage         = 'https://github.com/ablettchen/ATList'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }

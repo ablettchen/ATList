@@ -15,14 +15,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (copy, nonatomic) NSString *title;
 
 @property (assign, nonatomic) ATLoadStrategy loadStrategy;
-@property (assign, nonatomic) ATLoadType loadType;
+@property (assign, nonatomic) ATLoadStyle loadStyle;
 
-+ (ATExample *)exampleWithLoadStrategy:(ATLoadStrategy)loadStrategy loadType:(ATLoadType)loadType;
++ (ATExample *)exampleWithLoadStrategy:(ATLoadStrategy)loadStrategy loadStyle:(ATLoadStyle)loadStyle;
 
 @end
 
-NS_INLINE ATExample* ATExampleMake(ATLoadStrategy loadStrategy, ATLoadType loadType) {
-    return [ATExample exampleWithLoadStrategy:loadStrategy loadType:loadType];
+NS_INLINE ATExample* ATExampleMake(ATLoadStrategy loadStrategy, ATLoadStyle loadStyle) {
+    return [ATExample exampleWithLoadStrategy:loadStrategy loadStyle:loadStyle];
 }
 
 NS_ASSUME_NONNULL_END

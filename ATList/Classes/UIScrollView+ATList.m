@@ -86,8 +86,8 @@ static char const * const kAtList = "kAtList";
     AT_SAFE_BLOCK(block, conf);
     
     if (conf.length == 0) {
-        if (conf.loadType == ATLoadTypeNone || \
-            conf.loadType == ATLoadTypeNew) {
+        if (conf.loadStyle == ATLoadStyleNone || \
+            conf.loadStyle == ATLoadStyleHeader) {
             conf.length = dataLengthMax;
         }else {
             conf.length = dataLengthDefault;
@@ -105,8 +105,8 @@ static char const * const kAtList = "kAtList";
     self.atList.conf = self.atList.conf?:([[ATListDefaultConf defaultConf].conf copy]?:[ATListConf new]);
     
     if (self.atList.conf.loadStrategy == ATLoadStrategyAuto) {
-        if (self.atList.conf.loadType == ATLoadTypeNone ||
-            self.atList.conf.loadType == ATLoadTypeMore) {
+        if (self.atList.conf.loadStyle == ATLoadStyleNone ||
+            self.atList.conf.loadStyle == ATLoadStyleFooter) {
             
             ATLoadStatus loadStatus = ATLoadStatusNew;
             NSValue *loadStatusValue = [NSValue valueWithBytes:&loadStatus objCType:@encode(ATLoadStatus)];
