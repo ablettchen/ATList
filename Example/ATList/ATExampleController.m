@@ -103,8 +103,7 @@
     [self.tableView.atList loadNewData];
 }
 
-- (void)requestData:(NSDictionary *)parameters
-           finished:(void(^)(NSError *error, NSArray *datas))finished {
+- (void)requestData:(NSDictionary *)parameters finished:(void(^)(NSError *error, NSArray *datas))finished {
     NSLog(@"\nparameters:%@", parameters);
     NSMutableArray *models = [NSMutableArray array];
     
@@ -112,30 +111,25 @@
     
     void (^block)(void) = ^(void) {
         
-        switch (self.loadStyle) {
-            case ATLoadStyleNone:
-            case ATLoadStyleHeader:{
+        if (!(self.loadStyle | ATLoadStyleNone) ||
+            ((self.loadStyle & ATLoadStyleHeader) && !(self.loadStyle & ATLoadStyleFooter))) {
+            for (int i=0; i<range.length; i++) {
+                NSInteger value = range.location + i + 1;
+                [models addObject:@(value)];
+            }
+        }else if (((self.loadStyle & ATLoadStyleFooter) && !(self.loadStyle & ATLoadStyleHeader)) ||
+                  ((self.loadStyle & ATLoadStyleHeader) && (self.loadStyle & ATLoadStyleFooter))) {
+            if (range.location < 2) {
                 for (int i=0; i<range.length; i++) {
                     NSInteger value = range.location + i + 1;
                     [models addObject:@(value)];
                 }
-            }break;
-            case ATLoadStyleFooter:
-            case ATLoadStyleAll:{
-                if (range.location < 2) {
-                    for (int i=0; i<range.length; i++) {
-                        NSInteger value = range.location + i + 1;
-                        [models addObject:@(value)];
-                    }
-                }else {
-                    for (int i=0; i<2; i++) {
-                        NSInteger value = range.location + i + 1;
-                        [models addObject:@(value)];
-                    }
+            }else {
+                for (int i=0; i<2; i++) {
+                    NSInteger value = range.location + i + 1;
+                    [models addObject:@(value)];
                 }
-            }break;
-            default:
-                break;
+            }
         }
         
         if (self.addData) {

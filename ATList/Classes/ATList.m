@@ -154,20 +154,15 @@
         conf = [ATListConf new];
     }
     _conf = conf;
-    switch (self.conf.loadStyle) {
-        case ATLoadStyleNone:
-        case ATLoadStyleFooter:{
-            self.listView.mj_header = nil;
-            break;
-        }
-        case ATLoadStyleHeader:
-        case ATLoadStyleAll:{
-            if (self.conf.loadHeaderStyle == ATLoadHeaderStyleNormal) {
-                self.listView.mj_header = self.header;
-            }else if (self.conf.loadHeaderStyle == ATLoadHeaderStyleGif) {
-                self.listView.mj_header = self.gifHeader;
-            }
-            break;
+    if (!(conf.loadStyle | ATLoadStyleNone) ||
+        ((conf.loadStyle & ATLoadStyleFooter) && !(conf.loadStyle & ATLoadStyleHeader))) {
+        self.listView.mj_header = nil;
+    }else if (((conf.loadStyle & ATLoadStyleHeader) && !(conf.loadStyle & ATLoadStyleFooter)) ||
+              ((conf.loadStyle & ATLoadStyleHeader) && (conf.loadStyle & ATLoadStyleFooter))) {
+        if (self.conf.loadHeaderStyle == ATLoadHeaderStyleNormal) {
+            self.listView.mj_header = self.header;
+        }else if (self.conf.loadHeaderStyle == ATLoadHeaderStyleGif) {
+            self.listView.mj_header = self.gifHeader;
         }
     }
 }
@@ -241,8 +236,8 @@
                 self.blankType = ATBlankTypeNoData;
             }
         }else {
-            if (self.conf.loadStyle == ATLoadStyleFooter || \
-                self.conf.loadStyle == ATLoadStyleAll) {
+            if (((self.conf.loadStyle & ATLoadStyleFooter) && !(self.conf.loadStyle & ATLoadStyleHeader)) ||
+                ((self.conf.loadStyle & ATLoadStyleHeader) && (self.conf.loadStyle & ATLoadStyleFooter))) {
                 if (self.listView.itemsCount >= self.conf.length) {
                     self.listView.mj_footer = self.footer;
                 }else {
@@ -278,7 +273,8 @@
 
 - (void)loadNewData {
     if (self.conf.loadStrategy == ATLoadStrategyManual &&
-        (self.conf.loadStyle == ATLoadStyleHeader || self.conf.loadStyle == ATLoadStyleAll)) {
+        (((self.conf.loadStyle & ATLoadStyleHeader) && !(self.conf.loadStyle & ATLoadStyleFooter)) ||
+         ((self.conf.loadStyle & ATLoadStyleHeader) && (self.conf.loadStyle & ATLoadStyleFooter)))) {
         [self beginning];
     }else {
         [self pull_loadNewData];

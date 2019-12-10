@@ -18,26 +18,26 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_OPTIONS(NSUInteger, ATLoadStyle) {
-    ATLoadStyleNone = 0,                             ///< 无
-    ATLoadStyleHeader = 1 << 0,                         ///< 下拉刷新
-    ATLoadStyleFooter = 1 << 1,                        ///< 上拉加载
-    ATLoadStyleAll = ATLoadStyleHeader | ATLoadStyleFooter  ///< 下拉刷新和上拉加载
+    ATLoadStyleNone = 0,                                    ///< 无, 0000 0000
+    ATLoadStyleHeader = 1 << 0,                             ///< 下拉刷新, 0000 0001
+    ATLoadStyleFooter = 1 << 1,                             ///< 上拉加载, 0000 0010
+    ATLoadStyleAll = ATLoadStyleHeader | ATLoadStyleFooter  ///< 下拉刷新和上拉加载, 0000 0001 | 0000 0010 = 0000 0011
 };
 
 typedef NS_ENUM(NSUInteger, ATLoadStrategy) {
-    ATLoadStrategyAuto,                             ///< 自动，马上进入加载状态
-    ATLoadStrategyManual,                           ///< 手动，list.loadNewData(); 进行加载
+    ATLoadStrategyAuto,                                     ///< 自动，马上进入加载状态
+    ATLoadStrategyManual,                                   ///< 手动，list.loadNewData(); 进行加载
 };
 
 typedef NS_ENUM(NSUInteger, ATLoadStatus) {
-    ATLoadStatusIdle,                               ///< 闲置
-    ATLoadStatusNew,                                ///< 下拉刷新
-    ATLoadStatusMore,                               ///< 上拉加载
+    ATLoadStatusIdle,                                       ///< 闲置
+    ATLoadStatusNew,                                        ///< 下拉刷新
+    ATLoadStatusMore,                                       ///< 上拉加载
 };
 
 typedef NS_ENUM(NSUInteger, ATLoadHeaderStyle) {
-    ATLoadHeaderStyleNormal,                        ///< 默认
-    ATLoadHeaderStyleGif,                           ///< GIF
+    ATLoadHeaderStyleNormal,                                ///< 默认
+    ATLoadHeaderStyleGif,                                   ///< GIF
 };
 
 @interface ATListConf : NSObject
@@ -58,9 +58,9 @@ typedef NS_ENUM(NSUInteger, ATLoadHeaderStyle) {
 
 @interface ATList : NSObject
 
-@property (strong, nonatomic, nonnull) ATListConf *conf;                        ///< 配置
-@property (assign, readonly, nonatomic) enum ATLoadStatus loadStatus;           ///< 加载状态
-@property (assign, readonly, nonatomic) NSRange range;                          ///< 数据范围
+@property (strong, nonatomic, nonnull) ATListConf *conf;                                ///< 配置
+@property (assign, readonly, nonatomic) enum ATLoadStatus loadStatus;                   ///< 加载状态
+@property (assign, readonly, nonatomic) NSRange range;                                  ///< 数据范围
 
 /** 结束加载 */
 - (void)finish:(nullable NSError *)error;
