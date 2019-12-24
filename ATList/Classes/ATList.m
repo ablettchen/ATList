@@ -18,6 +18,12 @@
 #import "UIScrollView+ATBlank.h"
 #endif
 
+#if __has_include(<ATBlank/UIView+ATBlank.h>)
+#import <ATBlank/UIView+ATBlank.h>
+#else
+#import "UIView+ATBlank.h"
+#endif
+
 #if __has_include(<ATCategories/ATCategories.h>)
 #import <ATCategories/ATCategories.h>
 #else
