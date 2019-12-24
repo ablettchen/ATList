@@ -25,5 +25,7 @@ Pod::Spec.new do |s|
   s.dependency 'MJRefresh'
   s.dependency 'ATBlank'
   s.dependency 'ATCategories'
+  s.dependency 'Reachability'
   
 end
+ 

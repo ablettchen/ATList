@@ -30,6 +30,12 @@
 #import "ATCategories.h"
 #endif
 
+#if __has_include(<Reachability/Reachability.h>)
+#import <Reachability/Reachability.h>
+#else
+#import "Reachability.h"
+#endif
+
 @interface ATListConf ()<NSCopying>
 @end
 @implementation ATListConf
@@ -203,10 +209,22 @@
     if (!self.conf.blankDic || self.conf.blankDic.count == 0) {
         self.blank = defaultBlank(blankType);
     }else {
+        Reachability *rech = [Reachability reachabilityForInternetConnection];
         if (self.conf.blankDic[@(blankType)]) {
-            self.blank = self.conf.blankDic[@(blankType)];
+            // 无网络时优先显示无网络页面
+            if (rech.currentReachabilityStatus == NotReachable) {
+                self.blank = self.conf.blankDic[@(ATBlankTypeNoNetwork)];
+            }else {
+                self.blank = self.conf.blankDic[@(blankType)];
+            }
         }else {
-            self.blank = defaultBlank(blankType);
+            // 无网络时优先显示无网络页面
+            if (rech.currentReachabilityStatus == NotReachable) {
+                self.blank = defaultBlank(ATBlankTypeNoNetwork);
+            }else {
+                self.blank = defaultBlank(blankType);
+            }
+            
         }
     }
     
