@@ -84,9 +84,9 @@
 @property (strong, nonatomic) NSValue *loadStatusValue;                     ///< 加载状态
 @property (strong, nonatomic) NSValue *rangeValue;                          ///< 数据范围
 
-@property (strong, nonatomic) __kindof UIScrollView *listView;              ///< 目标View
+@property (weak, nonatomic) __kindof UIScrollView *listView;                ///< 目标View
 @property (strong, nonatomic) ATRefreshHeader *header;                      ///< 刷新头
-@property (strong, nonatomic) ATRefreshGifHeader *gifHeader;                   ///< 刷新头
+@property (strong, nonatomic) ATRefreshGifHeader *gifHeader;                ///< 刷新头
 @property (strong, nonatomic) ATRefreshFooter *footer;                      ///< 刷新尾
 @property (assign, nonatomic) enum ATBlankType blankType;                   ///< 空白页类型
 @property (strong, nonatomic) ATBlank *blank;                               ///< 空白页
