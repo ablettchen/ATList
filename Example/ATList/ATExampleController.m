@@ -52,7 +52,7 @@
         conf.loadStrategy = self.loadStrategy;
         conf.loadStyle = self.loadStyle;
         conf.length = 20;
-        conf.blankDic = @{@(ATBlankTypeFailure) : blankMake(blankImage(ATBlankTypeFailure), @"绘本数据加载失败", @"10015")};
+        conf.blankDic = @{@(ATBlankTypeFailure) : [ATBlank blankWithImage:[ATBlank defaultImageWithType:ATBlankTypeFailure] title:@"绘本数据加载失败" desc:@"10015"]};
     }];
 
     // 加载数据

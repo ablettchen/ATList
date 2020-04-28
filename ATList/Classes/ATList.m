@@ -162,9 +162,7 @@
 }
 
 - (void)setConf:(ATListConf *)conf {
-    if (conf == nil) {
-        conf = [ATListConf new];
-    }
+    if (conf == nil) {conf = [ATListConf new];}
     _conf = conf;
     if (!(conf.loadStyle | ATLoadStyleNone) ||
         ((conf.loadStyle & ATLoadStyleFooter) && !(conf.loadStyle & ATLoadStyleHeader))) {
@@ -207,7 +205,7 @@
 - (void)setBlankType:(enum ATBlankType)blankType {
     _blankType = blankType;
     if (!self.conf.blankDic || self.conf.blankDic.count == 0) {
-        self.blank = defaultBlank(blankType);
+        self.blank = [ATBlank defaultBlankWithType:blankType];
     }else {
         Reachability *rech = [Reachability reachabilityForInternetConnection];
         if (self.conf.blankDic[@(blankType)]) {
@@ -220,20 +218,20 @@
         }else {
             // 无网络时优先显示无网络页面
             if (rech.currentReachabilityStatus == NotReachable) {
-                self.blank = defaultBlank(ATBlankTypeNoNetwork);
+                self.blank = [ATBlank defaultBlankWithType:ATBlankTypeNoNetwork];
             }else {
-                self.blank = defaultBlank(blankType);
+                self.blank = [ATBlank defaultBlankWithType:blankType];
             }
-            
         }
     }
     
-    __weak __typeof(&*self)weakSelf = self;
+    @weakify(self);
     self.blank.tapBlock = ^{
-        if (!weakSelf.blank.isAnimating) {
-            weakSelf.blank.isAnimating = YES;
-            [weakSelf.listView reloadBlank];
-            [weakSelf loadNewData];
+        @strongify(self);
+        if (!self.blank.isAnimating) {
+            self.blank.isAnimating = YES;
+            [self.listView reloadBlank];
+            [self loadNewData];
         }
     };
     

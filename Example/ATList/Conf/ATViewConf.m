@@ -14,13 +14,23 @@
 + (void)listConf {
     // 列表配置（可选，如不设置，取默认）
     [ATListDefaultConf setupConf:^(ATListConf * _Nonnull conf) {
+        
         conf.loadStyle = ATLoadStyleAll;
         conf.loadStrategy = ATLoadStrategyAuto;
         conf.loadHeaderStyle = ATLoadHeaderStyleNormal;
         
-        ATBlank *failureBlank = blankMake(blankImage(ATBlankTypeFailure), @"请求失败", @"10010");
-        ATBlank *noDataBlank = blankMake(blankImage(ATBlankTypeNoData), @"暂无数据", @"10011");
-        ATBlank *noNetworkBlank = blankMake(blankImage(ATBlankTypeNoNetwork), @"没有网络", @"10012");
+        ATBlank *failureBlank = [ATBlank blankWithImage:[ATBlank defaultImageWithType:ATBlankTypeFailure]
+                                                  title:@"请求失败"
+                                                   desc:@"10010"];
+        
+        ATBlank *noDataBlank = [ATBlank blankWithImage:[ATBlank defaultImageWithType:ATBlankTypeNoData]
+                                                 title:@"暂无数据"
+                                                  desc:@"10011"];
+        
+        ATBlank *noNetworkBlank = [ATBlank blankWithImage:[ATBlank defaultImageWithType:ATBlankTypeNoNetwork]
+                                                 title:@"没有网络"
+                                                  desc:@"10012"];
+
         noDataBlank.isTapEnable = NO;
         
         conf.blankDic = @{@(ATBlankTypeFailure)   : failureBlank,
