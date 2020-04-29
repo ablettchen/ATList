@@ -48,6 +48,7 @@
 }
 
 - (void)reset {
+    self.customBlankView = nil;
     self.loadStyle = ATLoadStyleHeader;
     self.loadStrategy = ATLoadStrategyAuto;
     self.length = 0;
@@ -65,6 +66,7 @@
 
 - (id)copyWithZone:(NSZone __unused *)zone {
     ATListConf *conf = [ATListConf new];
+    conf.customBlankView = self.customBlankView;
     conf.loadStyle = self.loadStyle;
     conf.loadStrategy = self.loadStrategy;
     conf.length = self.length;
@@ -188,7 +190,7 @@
     if (self.loadStatus != ATLoadStatusIdle) {return;}
     
     self.loadStatus = ATLoadStatusMore;
-    int loc = ceil((float)self.listView.itemsCount/self.conf.length)?:1;
+    int loc = ceil((float)self.listView.itemsCount / self.conf.length) ? : 1;
     self.range = NSMakeRange(loc*self.conf.length, self.conf.length);
     
     SEL loadMoreSEL = NSSelectorFromString(@"loadMoreData");
