@@ -235,6 +235,7 @@
         }
     };
     
+    self.blank.customBlankView = self.conf.customBlankView;
     [self.listView setBlank:self.blank];
     [self.listView reloadBlank];
 }
