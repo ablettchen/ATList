@@ -7,7 +7,7 @@
 //  Copyright (c) 2019 ablett. All rights reserved.
 //
 
-#import "MJRefreshAutoStateFooter.h"
+#import <MJRefresh/MJRefreshAutoStateFooter.h>
 
 @interface ATRefreshFooter : MJRefreshAutoStateFooter
 /** 菊花的样式 */

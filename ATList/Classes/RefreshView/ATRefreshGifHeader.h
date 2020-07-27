@@ -6,7 +6,7 @@
 //  Copyright © 2019 ablett. All rights reserved.
 //
 
-#import <MJRefresh/MJRefresh.h>
+#import <MJRefresh/MJRefreshGifHeader.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
