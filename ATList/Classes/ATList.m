@@ -191,7 +191,7 @@
     if (self.loadStatus != ATLoadStatusIdle) {return;}
     
     self.loadStatus = ATLoadStatusMore;
-    int loc = ceil((float)self.listView.itemsCount / self.conf.length) ? : 1;
+    int loc = ceil((float)self.listView.at_itemsCount / self.conf.length) ? : 1;
     self.range = NSMakeRange(loc*self.conf.length, self.conf.length);
     
     SEL loadMoreSEL = NSSelectorFromString(@"loadMoreData");
@@ -233,21 +233,21 @@
         @strongify(self);
         if (!self.blank.isAnimating) {
             self.blank.isAnimating = YES;
-            [self.listView reloadBlank];
+            [self.listView at_reloadBlank];
             [self loadNewData];
         }
     };
     
     self.blank.customBlankView = self.conf.customBlankView;
-    [self.listView setBlank:self.blank];
-    [self.listView reloadBlank];
+    [self.listView setAt_Blank:self.blank];
+    [self.listView at_reloadBlank];
 }
 
 #pragma mark - public
 
 - (void)finish:(nullable NSError *)error {
     if (self.blank.isAnimating) {self.blank.isAnimating = NO;}
-    [self.listView reloadBlank];
+    [self.listView at_reloadBlank];
     
     // 解决非控件触发的刷新（使用者直接调用 finish:）而导致 loadStatus 无法得到正确的状态，致使无法正确显示页面，故此处需要重设 loadStatus = ATLoadStatusNew
     if (self.loadStatus == ATLoadStatusIdle) {self.loadStatus = ATLoadStatusNew;}
@@ -255,7 +255,7 @@
     if (self.loadStatus == ATLoadStatusNew) {
         [self.listView.mj_header endRefreshing];
         [self.listView.mj_footer resetNoMoreData];
-        if (self.listView.itemsCount == 0) {
+        if (self.listView.at_itemsCount == 0) {
             if (error) {
                 self.blankType = ATBlankTypeFailure;
             }else {
@@ -264,7 +264,7 @@
         }else {
             if (((self.conf.loadStyle & ATLoadStyleFooter) && !(self.conf.loadStyle & ATLoadStyleHeader)) ||
                 ((self.conf.loadStyle & ATLoadStyleHeader) && (self.conf.loadStyle & ATLoadStyleFooter))) {
-                if (self.listView.itemsCount >= self.conf.length) {
+                if (self.listView.at_itemsCount >= self.conf.length) {
                     self.listView.mj_footer = self.footer;
                 }else {
                     self.listView.mj_footer = nil;
@@ -272,7 +272,7 @@
             }
         }
     }else if (self.loadStatus == ATLoadStatusMore) {
-        if ((self.listView.itemsCount - self.lastItemCount) < self.range.length) {
+        if ((self.listView.at_itemsCount - self.lastItemCount) < self.range.length) {
             [self.listView.mj_footer endRefreshingWithNoMoreData];
         }else {
             self.listView.mj_footer = self.footer;
@@ -283,7 +283,7 @@
     [self reloadData];
     self.loadStatus = ATLoadStatusIdle;
     
-    self.lastItemCount = self.listView.itemsCount;
+    self.lastItemCount = self.listView.at_itemsCount;
 }
 
 - (void)pull_loadNewData {
@@ -298,6 +298,19 @@
 }
 
 - (void)loadNewData {
+    [self loadNewDataWithAnimated:YES];
+}
+
+- (void)loadNewDataWithAnimated:(BOOL)animated {
+    [self loadNewDataWithAnimated:animated length:self.conf.length];
+}
+
+- (void)loadNewDataWithAnimated:(BOOL)animated length:(int)length {
+    self.conf.length = length;
+    if (animated == false) {
+        [self pull_loadNewData];
+        return;
+    }
     if (self.conf.loadStrategy == ATLoadStrategyManual &&
         (((self.conf.loadStyle & ATLoadStyleHeader) && !(self.conf.loadStyle & ATLoadStyleFooter)) ||
          ((self.conf.loadStyle & ATLoadStyleHeader) && (self.conf.loadStyle & ATLoadStyleFooter)))) {

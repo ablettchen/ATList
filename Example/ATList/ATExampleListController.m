@@ -59,7 +59,7 @@
         _tableView.contentInset = UIEdgeInsetsMake(0, 0, 34, 0);
         [_tableView registerClass:UITableViewCell.class forCellReuseIdentifier:NSStringFromClass(UITableViewCell.class)];
         [self.view addSubview:_tableView];
-        adjustsScrollViewInsets_NO(_tableView, self);
+        [_tableView adjustmentScrollInsetNO];
     }
     return _tableView;
 }

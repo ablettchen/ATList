@@ -48,7 +48,7 @@
     
     // 具体列表配置（可选，如不设置，则取 ATListDefaultConf，ATListDefaultConf 未设置时取 conf）
     @weakify(self);
-    [self.tableView updateListConf:^(ATListConf * _Nonnull conf) {
+    [self.tableView at_updateListConf:^(ATListConf * _Nonnull conf) {
         conf.loadStrategy = self.loadStrategy;
         conf.loadStyle = self.loadStyle;
         conf.length = 20;
@@ -56,7 +56,7 @@
     }];
 
     // 加载数据
-    [self.tableView loadListData:^(ATList * _Nonnull list) { 
+    [self.tableView at_loadListData:^(ATList * _Nonnull list) {
         NSDictionary *parameters = @{@"offset"  : @(list.range.location),
                                      @"number"  : @(list.range.length)};
         @strongify(self);
@@ -92,7 +92,7 @@
         _tableView.contentInset = UIEdgeInsetsMake(0, 0, 34, 0);
         [_tableView registerClass:UITableViewCell.class forCellReuseIdentifier:NSStringFromClass(UITableViewCell.class)];
         [self.view addSubview:_tableView];
-        adjustsScrollViewInsets_NO(_tableView, self);
+        [_tableView adjustmentScrollInsetNO];
     }
     return _tableView;
 }
@@ -100,7 +100,7 @@
 #pragma mark - privite
 
 - (void)loadDatas {
-    [self.tableView.atList loadNewData];
+    [self.tableView.at_list loadNewData];
 }
 
 - (void)requestData:(NSDictionary *)parameters finished:(void(^)(NSError *error, NSArray *datas))finished {

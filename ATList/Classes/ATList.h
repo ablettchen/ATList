@@ -69,6 +69,8 @@ typedef NS_ENUM(NSUInteger, ATLoadHeaderStyle) {
 
 /** 加载新数据*/
 - (void)loadNewData;
+- (void)loadNewDataWithAnimated:(BOOL)animated;
+- (void)loadNewDataWithAnimated:(BOOL)animated length:(int)length;
 
 /** 进入刷新状态 */
 - (void)beginning;

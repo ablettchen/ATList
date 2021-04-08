@@ -29,7 +29,7 @@ static int const dataLengthMax     = 10000;
 static char const * const kAtList = "kAtList";
 
 @interface UIScrollView ()
-@property (strong, readwrite, nonatomic) ATList *atList;
+@property (strong, readwrite, nonatomic) ATList *at_list;
 @property (copy, nonatomic) void (^confBlock) (ATListConf *conf);
 @property (copy, nonatomic) void (^loadBlock) (ATList *list);
 @end
@@ -38,11 +38,11 @@ static char const * const kAtList = "kAtList";
 
 #pragma mark - setter, getter
 
-- (void)setAtList:(ATList *)atList {
+- (void)setAt_list:(ATList *)atList {
     objc_setAssociatedObject(self, &kAtList, atList, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (ATList *)atList {
+- (ATList *)at_list {
     ATList *list = objc_getAssociatedObject(self, &kAtList);
     if (!list) {
         list = [ATList new];
@@ -70,19 +70,19 @@ static char const * const kAtList = "kAtList";
 #pragma mark - privite
 
 - (void)loadNewData {
-    AT_SAFE_BLOCK(self.loadBlock, self.atList);
+    AT_SAFE_BLOCK(self.loadBlock, self.at_list);
 }
 
 - (void)loadMoreData {
-    AT_SAFE_BLOCK(self.loadBlock, self.atList);
+    AT_SAFE_BLOCK(self.loadBlock, self.at_list);
 }
 
 #pragma mark - public
 
-- (void)updateListConf:(nullable void(^)(ATListConf * _Nonnull conf))block {
+- (void)at_updateListConf:(nullable void(^)(ATListConf * _Nonnull conf))block {
     self.confBlock = block;
     
-    ATListConf *conf = self.atList.conf ? : ([[ATListDefaultConf defaultConf].conf copy] ? : [ATListConf new]);
+    ATListConf *conf = self.at_list.conf ? : ([[ATListDefaultConf defaultConf].conf copy] ? : [ATListConf new]);
     AT_SAFE_BLOCK(block, conf);
     
     if (conf.length == 0) {
@@ -93,35 +93,35 @@ static char const * const kAtList = "kAtList";
             conf.length = dataLengthDefault;
         }
     }
-    self.atList.conf = conf;
+    self.at_list.conf = conf;
 }
 
-- (void)loadListData:(void(^)(ATList * _Nonnull list))block {
+- (void)at_loadListData:(void(^)(ATList * _Nonnull list))block {
     self.loadBlock = block;
     
     SEL setListViewSEL = NSSelectorFromString(@"setListView:");
-    AT_SAFE_PERFORM_SELECTOR(self.atList, setListViewSEL, self);
+    AT_SAFE_PERFORM_SELECTOR(self.at_list, setListViewSEL, self);
 
-    self.atList.conf = self.atList.conf?:([[ATListDefaultConf defaultConf].conf copy]?:[ATListConf new]);
+    self.at_list.conf = self.at_list.conf?:([[ATListDefaultConf defaultConf].conf copy]?:[ATListConf new]);
     
-    if (self.atList.conf.loadStrategy == ATLoadStrategyAuto) {
-        if (!(self.atList.conf.loadStyle | ATLoadStyleNone) ||
-            ((self.atList.conf.loadStyle & ATLoadStyleFooter) && !(self.atList.conf.loadStyle & ATLoadStyleHeader))) {
+    if (self.at_list.conf.loadStrategy == ATLoadStrategyAuto) {
+        if (!(self.at_list.conf.loadStyle | ATLoadStyleNone) ||
+            ((self.at_list.conf.loadStyle & ATLoadStyleFooter) && !(self.at_list.conf.loadStyle & ATLoadStyleHeader))) {
             
             ATLoadStatus loadStatus = ATLoadStatusNew;
             NSValue *loadStatusValue = [NSValue valueWithBytes:&loadStatus objCType:@encode(ATLoadStatus)];
             SEL statusSEL = NSSelectorFromString(@"setLoadStatusValue:");
-            AT_SAFE_PERFORM_SELECTOR(self.atList, statusSEL, loadStatusValue);
+            AT_SAFE_PERFORM_SELECTOR(self.at_list, statusSEL, loadStatusValue);
             
-            NSRange range = NSMakeRange(0, self.atList.conf.length);
+            NSRange range = NSMakeRange(0, self.at_list.conf.length);
             NSValue *rangeValue = [NSValue valueWithBytes:&range objCType:@encode(NSRange)];
             SEL rangeSEL = NSSelectorFromString(@"setRangeValue:");
-            AT_SAFE_PERFORM_SELECTOR(self.atList, rangeSEL, rangeValue);
+            AT_SAFE_PERFORM_SELECTOR(self.at_list, rangeSEL, rangeValue);
             
-            AT_SAFE_BLOCK(self.loadBlock, self.atList);
+            AT_SAFE_BLOCK(self.loadBlock, self.at_list);
             
         }else {
-            [self.atList beginning];
+            [self.at_list beginning];
         }
     }
 }
