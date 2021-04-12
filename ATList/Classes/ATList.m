@@ -305,7 +305,7 @@
     [self loadNewDataWithAnimated:animated length:self.conf.length];
 }
 
-- (void)loadNewDataWithAnimated:(BOOL)animated length:(int)length {
+- (void)loadNewDataWithAnimated:(BOOL)animated length:(NSUInteger)length {
     self.conf.length = length;
     if (animated == false) {
         [self pull_loadNewData];
